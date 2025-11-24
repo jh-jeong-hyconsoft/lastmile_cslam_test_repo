@@ -96,7 +96,7 @@ mrg_slam_component:
 keyframe_uploader:
   ros__parameters:
     enable_upload: true
-    rate_limit: 0.5                     # Hz
+    rate_limit: 1.0                     # Hz
 
 # FloorDetectionComponent
 floor_detection_component:
