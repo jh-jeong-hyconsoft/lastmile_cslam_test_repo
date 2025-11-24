@@ -1,0 +1,111 @@
+"/**":
+  ros__parameters:
+    robot_namespace: "robot1"
+    use_sim_time: true
+    lidar_points_topic: "/robot1/ouster/points"
+    wheel_odom_topic: "/robot1/odom"
+    enable_slam_tf_broadcast: false
+
+# PrefilteringComponent (실외: 원거리·대역폭 절약)
+prefiltering_component:
+  ros__parameters:
+    enable_prefiltering: true
+    base_link_frame: "base_link"
+
+    downsample_method: "VOXELGRID"
+    downsample_resolution: 0.6          # 실외 넓은 환경, 대역폭 절약
+    downsample_min_points_per_voxel: 1
+
+    outlier_removal_method: "RADIUS"
+    statistical_mean_k: 30
+    statistical_stddev: 1.2
+    radius_radius: 0.6
+    radius_min_neighbors: 2
+
+    enable_distance_filter: true
+    distance_near_thresh: 0.2
+    distance_far_thresh: 150.0
+
+    enable_deskewing: false
+    scan_period: 0.05                   # OS1 20Hz
+
+    filtered_points_publish_rate: 0.7   # Hz, 대역폭 고려
+
+# ScanMatchingOdometryComponent
+scan_matching_odometry_component:
+  ros__parameters:
+    enable_tf_broadcast: false
+    enable_scan_matching_odometry: true
+    odom_frame_id: "odom"
+    robot_odom_frame_id: "odom"
+
+    downsample_method: "VOXELGRID"
+    downsample_resolution: 0.5
+    downsample_min_points_per_voxel: 1
+
+    keyframe_delta_translation: 1.5     # 실외: 더 넓은 간격
+    keyframe_delta_angle: 0.6
+    keyframe_delta_time: 4.0
+
+    registration_method: "NDT_OMP"
+    reg_num_threads: 8
+    reg_transformation_epsilon: 0.1
+    reg_maximum_iterations: 64
+    reg_max_correspondence_distance: 2.5
+    reg_use_reciprocal_correspondences: false
+    reg_correspondence_randomness: 20
+    reg_resolution: 1.0
+    reg_nn_search_method: "DIRECT7"
+
+    enable_robot_odometry_init_guess: true
+    enable_imu_frontend: false
+
+# MrgSlamComponent
+mrg_slam_component:
+  ros__parameters:
+    enable_mrg_slam: true
+    map_frame_id: "map"
+    odom_frame_id: "odom"
+
+    g2o_solver_type: "lm_var_cholmod"
+    g2o_solver_num_iterations: 320
+    use_custom_inf_matrix_first_node: true
+    graph_update_interval: 3.0
+
+    candidate_max_xy_distance: 8.0
+    fitness_score_thresh: 0.6
+    registration_method: "NDT_OMP"
+
+    enable_keyframe_event_publish: true
+    keyframe_event_downsample_resolution: 0.6
+
+    publish_slam_pose_with_covariance: true
+    slam_pose_cov_base_pos: 0.012
+    slam_pose_cov_base_rot: 0.015
+    slam_pose_cov_fitness_ref: 0.6
+    slam_pose_cov_fitness_scale: 6.0
+
+    map_cloud_resolution: 0.2
+    map_cloud_min_points_per_voxel: 1
+    map_cloud_distance_far_thresh: 200.0
+
+    enable_gps: false
+    save_graph: false
+
+# KeyframeUploaderComponent
+keyframe_uploader:
+  ros__parameters:
+    enable_upload: true
+    rate_limit: 0.3
+
+# FloorDetectionComponent
+floor_detection_component:
+  ros__parameters:
+    enable_floor_detection: true
+    tilt_deg: 0.0
+    sensor_height: 0.34
+    height_clip_range: 0.4
+    floor_pts_thresh: 512
+    floor_normal_thresh_deg: 10.0
+    enable_normal_filtering: true
+    normal_filter_thresh_deg: 20.0

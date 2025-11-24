@@ -506,14 +506,14 @@ Visualization Manager:
         - Alpha: 1
           Autocompute Intensity Bounds: true
           Autocompute Value Bounds:
-            Max Value: 2.536520004272461
-            Min Value: -2.597695827484131
+            Max Value: 2.6573171615600586
+            Min Value: -0.6125028729438782
             Value: true
           Axis: Z
           Channel Name: intensity
           Class: rviz_default_plugins/PointCloud2
           Color: 255; 255; 255
-          Color Transformer: AxisColor
+          Color Transformer: FlatColor
           Decay Time: 0
           Enabled: true
           Invert Rainbow: false
@@ -622,7 +622,7 @@ Visualization Manager:
               Scale: 1
               Value: true
             Value: true
-          Enabled: false
+          Enabled: true
           Keep: 100
           Name: robot1/scan_matching_odometry/odom
           Position Tolerance: 0.10000000149011612
@@ -643,7 +643,7 @@ Visualization Manager:
             History Policy: Keep Last
             Reliability Policy: Reliable
             Value: /robot1/scan_matching_odometry/odom
-          Value: false
+          Value: true
         - Alpha: 1
           Autocompute Intensity Bounds: true
           Autocompute Value Bounds:
@@ -656,12 +656,12 @@ Visualization Manager:
           Color: 255; 255; 255
           Color Transformer: Intensity
           Decay Time: 0
-          Enabled: false
+          Enabled: true
           Invert Rainbow: false
           Max Color: 255; 255; 255
-          Max Intensity: 0
+          Max Intensity: 4676.818359375
           Min Color: 0; 0; 0
-          Min Intensity: 0
+          Min Intensity: 22
           Name: robot1/scan_matching_odometry/aligned_points
           Position Transformer: XYZ
           Selectable: true
@@ -677,7 +677,7 @@ Visualization Manager:
             Value: /robot1/scan_matching_odometry/aligned_points
           Use Fixed Frame: true
           Use rainbow: true
-          Value: false
+          Value: true
         - Alpha: 1
           Autocompute Intensity Bounds: true
           Autocompute Value Bounds:
@@ -749,8 +749,8 @@ Visualization Manager:
         - Alpha: 1
           Autocompute Intensity Bounds: true
           Autocompute Value Bounds:
-            Max Value: 18.067718505859375
-            Min Value: -2.245129108428955
+            Max Value: 6.104542255401611
+            Min Value: -1.7421834468841553
             Value: true
           Axis: Z
           Channel Name: z
@@ -1393,25 +1393,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 21.610734939575195
+      Distance: 12.773235321044922
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 3.277801990509033
-        Y: 3.511209487915039
-        Z: -4.334629535675049
+        X: 3.0670201778411865
+        Y: 5.974795341491699
+        Z: 0.7770366668701172
       Focal Shape Fixed Size: false
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.44979849457740784
+      Pitch: 1.2147985696792603
       Target Frame: map
       Value: Orbit (rviz)
-      Yaw: 4.859014511108398
+      Yaw: 6.234013080596924
     Saved: ~
 Window Geometry:
   Displays:
@@ -1427,5 +1427,5 @@ Window Geometry:
   Views:
     collapsed: true
   Width: 1908
-  X: 1920
-  Y: 0
+  X: 1894
+  Y: -43
