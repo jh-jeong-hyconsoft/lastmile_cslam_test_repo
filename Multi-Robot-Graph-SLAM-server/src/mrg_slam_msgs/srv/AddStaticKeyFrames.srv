@@ -1,0 +1,6 @@
+# Static keyframes in the vicinity of the robot
+KeyFrameRos[] keyframes
+
+---
+
+bool success

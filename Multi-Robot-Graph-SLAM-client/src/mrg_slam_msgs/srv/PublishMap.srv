@@ -1,0 +1,27 @@
+# Resolution of the voxel grid filter in meters
+# If not set the map will be published with the resolution of the config
+# For negative values the full map will be published
+float64 resolution 0.0
+
+# Minimum number of points for the voxel grid filter, all cells with less points will be removed. 
+# If not set the parameter from the config is used.
+int64 min_points_per_voxel -1
+
+# Distance far threshold in meters, points further than this will be skipped
+# If not set the parameter from the config is used.
+float64 distance_far_thresh 0.0
+
+# Frame id of the published point cloud
+# If empty the map will be published in the map frame of the config
+string frame_id
+
+# Whether to skip the point cloud associated with the very first keyframe.
+# This cloud might include points of other dynamic robots, 
+# participating in the Multi-Robot-Graph-SLAM, 
+# which would be filtered after the very first keyframe.
+bool skip_first_cloud false
+
+
+---
+
+bool success

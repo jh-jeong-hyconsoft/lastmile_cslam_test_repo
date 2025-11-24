@@ -1,0 +1,42 @@
+{
+  // zenoh 세션 모드: 이쪽은 서버에 붙는 client
+  mode: "client",
+
+  // 서버(도메인 15)가 listen 하는 endpoint로 접속
+  // WSL 안에서 둘 다 돌리면 localhost 사용
+  connect: {
+    endpoints: [
+      "tcp/127.0.0.1:7448"
+    ]
+  },
+
+  plugins: {
+    ros2dds: {
+      // ROS2 노드 이름 (rqt_graph 등에 보이는 이름)
+      nodename: "zenoh_bridge_robot1",
+
+      // domain은 여기서 생략하고, 실행할 때 -d 11 또는 ROS_DOMAIN_ID=11로 줄 거라 그대로 두면 됨
+      // domain: 11,
+
+      // WSL이라 localhost만 쓰는 게 아니라서 false
+      ros_localhost_only: false,
+
+      // 어떤 인터페이스를 Zenoh로 내보낼지/받을지
+      // allow만 쓰고 deny는 아예 쓰지 않는다.
+      allow: {
+        // 이 브리지가 ROS→Zenoh로 내보낼 토픽 (도메인 11에서 서버로 올라가는 것)
+        publishers: [
+          "/robot1/slam/keyframe_upload"
+        ],
+
+        // 이 브리지가 Zenoh→ROS로 내려받을 토픽 (서버에서 내려오는 글로벌 맵)
+        subscribers: [
+          "/global/map_merged"
+        ]
+
+        // service_servers, service_clients, action_servers, action_clients 는
+        // 안 쓸 거라 그냥 생략해도 됨 (생략 = 허용X)
+      }
+    }
+  }
+}

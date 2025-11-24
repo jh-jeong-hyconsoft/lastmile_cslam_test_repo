@@ -1,0 +1,8 @@
+# Provide either the edge id or the readable id, if both are provided, the uuid_str will be preferred
+string uuid_str
+string readable_id
+
+---
+
+bool success
+string message

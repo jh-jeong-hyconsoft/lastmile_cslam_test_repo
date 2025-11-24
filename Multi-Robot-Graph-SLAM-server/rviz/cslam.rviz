@@ -1,0 +1,94 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+  - Class: rviz_common/Views
+    Name: Views
+
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Class: rviz_default_plugins/Grid
+      Name: Grid
+      Reference Frame: world
+      Plane Cell Count: 100
+      Cell Size: 1.0
+      Color: 160; 160; 164
+      Enabled: true
+      
+    # 전역 통합 맵 (흰색)
+    - Class: rviz_default_plugins/PointCloud2
+      Name: Global Map Merged
+      Topic:
+        Value: /global/map_merged
+        Depth: 5
+        Durability Policy: Transient Local
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+      Enabled: true
+      Size (m): 0.02
+      Style: Flat Squares
+      Color Transformer: Intensity
+      Use rainbow: true
+      Min Intensity: 0
+      Max Intensity: 4096
+      
+    # 로봇 1 맵 (빨강, 선택)
+    - Class: rviz_default_plugins/PointCloud2
+      Name: Robot1 Map
+      Topic:
+        Value: /robot1/mrg_slam/map_points
+        Depth: 5
+        Durability Policy: Transient Local
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+      Enabled: false
+      Size (m): 0.02
+      Style: Flat Squares
+      Color Transformer: FlatColor
+      Color: 255; 0; 0
+      Alpha: 0.5
+      
+    # 로봇 2 맵 (초록, 선택)
+    - Class: rviz_default_plugins/PointCloud2
+      Name: Robot2 Map
+      Topic:
+        Value: /robot2/mrg_slam/map_points
+        Depth: 5
+        Durability Policy: Transient Local
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+      Enabled: false
+      Size (m): 0.02
+      Style: Flat Squares
+      Color Transformer: FlatColor
+      Color: 0; 255; 0
+      Alpha: 0.5
+      
+    # 로봇 3 맵 (파랑, 선택)
+    - Class: rviz_default_plugins/PointCloud2
+      Name: Robot3 Map
+      Topic:
+        Value: /robot3/mrg_slam/map_points
+        Depth: 5
+        Durability Policy: Transient Local
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+      Enabled: false
+      Size (m): 0.02
+      Style: Flat Squares
+      Color Transformer: FlatColor
+      Color: 0; 0; 255
+      Alpha: 0.5
+
+  Global Options:
+    Fixed Frame: world
+    Background Color: 48; 48; 48
+
+  Views:
+    Current:
+      Class: rviz_default_plugins/TopDownOrtho
+      Name: TopDownOrtho
+      Scale: 50
+      X: 0
+      Y: 0
+

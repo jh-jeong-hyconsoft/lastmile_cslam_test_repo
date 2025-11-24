@@ -1,0 +1,37 @@
+BasedOnStyle: Google
+UseTab: Never
+ColumnLimit: 140
+FixNamespaceComments: true
+IncludeBlocks: Regroup
+MaxEmptyLinesToKeep: 2
+
+# spacing
+SpaceBeforeParens: Never
+SpacesInParentheses: true
+SpaceAfterTemplateKeyword: false
+
+# line breakes
+BreakBeforeBraces: Custom
+BraceWrapping:
+    AfterFunction: true
+AlwaysBreakAfterReturnType: TopLevelDefinitions
+BreakConstructorInitializers: AfterColon
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+BreakBeforeBinaryOperators: NonAssignment
+AlignAfterOpenBracket: true
+
+# indention
+IndentWidth: 4
+IndentCaseLabels: true
+AccessModifierOffset: -4
+IndentPPDirectives: AfterHash
+
+# alignment
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
+#AlignConsecutiveMacros: true # not available in current clang-formatter supplied with VS Code C++ extension
+
+# penalties
+PenaltyBreakComment: 50
+PenaltyBreakAssignment: 100
+PenaltyBreakBeforeFirstCallParameter: 100

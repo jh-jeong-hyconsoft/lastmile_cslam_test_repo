@@ -1,0 +1,5 @@
+.vscode/*
+imgui.ini
+
+# Python cache files
+*.pyc

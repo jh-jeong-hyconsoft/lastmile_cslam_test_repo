@@ -1,0 +1,11 @@
+
+
+---
+
+# All uuids that are part of the SLAM graph
+
+string[] keyframe_uuid_strs
+string[] readable_keyframes
+
+string[] edge_uuid_strs
+string[] readable_edges

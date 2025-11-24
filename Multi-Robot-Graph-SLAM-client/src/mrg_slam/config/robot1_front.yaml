@@ -1,0 +1,150 @@
+"/**":
+  ros__parameters:
+    # 로봇 네임스페이스 (robot2, robot3 로 변경해서 사용)
+    robot_namespace: "robot1"
+
+    # 시뮬레이션 시간 사용 여부
+    use_sim_time: true
+
+    # 센서 토픽 (로봇별로 여기만 바꾸면 됨)
+    lidar_points_topic: "/robot1/ouster/points"
+    wheel_odom_topic: "/robot1/odom"
+
+    # SLAM 쪽에서 TF 브로드캐스트 여부 (B안에서는 false 유지)
+    enable_slam_tf_broadcast: false
+
+
+# PrefilteringComponent 파라미터
+prefiltering_component:
+  ros__parameters:
+    enable_prefiltering: true
+
+    # base_link_frame 은 launch 에서 robot_namespace 를 prefix 로 붙입니다.
+    # 여기에는 로봇 공통 프레임 이름만 넣습니다.
+    base_link_frame: "base_link"
+
+    # 다운샘플 (WLAN/VPN 고려)
+    downsample_method: "VOXELGRID"
+    downsample_resolution: 0.5  # 0.3~0.5 (LTE 품질에 따라 조정)
+
+    # Outlier removal method options [STATISTICAL, RADIUS, NONE]
+    outlier_removal_method: "RADIUS" 
+    # Further parameters when choosing STATISTICAL
+    statistical_mean_k: 30
+    statistical_stddev: 1.2
+    # Further parameters when choosing RADIUS
+    radius_radius: 0.5
+    radius_min_neighbors: 2
+
+    # Distance filter
+    enable_distance_filter: true
+    distance_near_thresh: 0.1
+    distance_far_thresh: 35.0
+
+    # Deskewing parameters
+    enable_deskewing: false
+    scan_period: 0.2
+
+    # 필터된 포인트 발행 주기 (대역폭 제어)
+    filtered_points_publish_rate: 0.5  # Hz (0.5~2.0)
+
+
+# ScanMatchingOdometryComponent 파라미터
+scan_matching_odometry_component:
+  ros__parameters:
+    # 프레임 설정 (launch 에서 robot_namespace prefix 붙임)
+    enable_tf_broadcast: false
+    enable_scan_matching_odometry: false
+    odom_frame_id: "odom"
+    robot_odom_frame_id: "odom"
+
+    # 다운샘플
+    downsample_method: "VOXELGRID"
+    downsample_resolution: 0.3     # 내부 정합용은 좀 더 세밀하게
+    downsample_min_points_per_voxel: 1
+
+    # 키프레임 생성 조건
+    keyframe_delta_translation: 1.0
+    keyframe_delta_angle: 0.5236 # 0.5236 rad = 30 degrees
+    keyframe_delta_time: 10000.0
+
+    # 정합 알고리즘
+    registration_method: "NDT_OMP"    # FAST_GICP, SMALL_GICP, NDT_OMP
+    reg_num_threads: 8
+    reg_transformation_epsilon: 0.1
+    reg_maximum_iterations: 64
+    reg_max_correspondence_distance: 2.0
+    reg_use_reciprocal_correspondences: false
+    reg_correspondence_randomness: 20
+    reg_resolution: 1.0 # NDT 0.5
+    reg_nn_search_method: "DIRECT7"
+
+    # IMU/휠 초기 추정 사용 여부
+    enable_robot_odometry_init_guess: true
+    enable_imu_frontend: false
+
+# 로컬 SLAM = MrgSlamComponent (B안용 로컬 백엔드)
+mrg_slam_component:
+  ros__parameters:
+    # B안: Jetson A에서 로컬 SLAM 활성화
+    enable_mrg_slam: true
+
+    # 프레임 설정은 launch 쪽에서 robot_namespace를 prefix로 붙여 설정
+    map_frame_id: "map"
+    odom_frame_id: "odom"
+
+    # B안 전용: 로컬 그래프 최적화
+    g2o_solver_type: "lm_var_cholmod"
+    g2o_solver_num_iterations: 384     # AGX Orin 충분한 리소스
+    use_custom_inf_matrix_first_node: true  # 그래프 게이지 고정(최초 노드 앵커)
+    graph_update_interval: 3.0         # 초
+
+    # 루프 클로저 (로컬)
+    candidate_max_xy_distance: 5.0
+    fitness_score_thresh: 0.5
+    registration_method: "NDT_OMP"
+
+    # 키프레임 이벤트 발행 (B안 필수)
+    enable_keyframe_event_publish: true
+    keyframe_event_downsample_resolution: 0.5  # 업로드용 다운샘플 (0.5m)
+
+    # SLAM pose 공분산 설정
+    publish_slam_pose_with_covariance: true
+    slam_pose_cov_base_pos: 0.009
+    slam_pose_cov_base_rot: 0.01
+    slam_pose_cov_fitness_ref: 0.5
+    slam_pose_cov_fitness_scale: 5.0
+
+    # 맵 생성 파라미터 (더 많은 포인트)
+    map_cloud_resolution: 0.1                 # 10cm voxel
+    map_cloud_min_points_per_voxel: 1         # voxel당 최소 포인트 수
+    map_cloud_distance_far_thresh: 10000.0    # 거리 필터 비활성화
+
+    enable_gps: false
+    save_graph: false
+
+# KeyframeUploaderComponent 파라미터
+keyframe_uploader:
+  ros__parameters:
+    enable_upload: true
+    rate_limit: 0.3  # Hz (최대 업로드 주기)
+
+# Floor detection component parameters
+floor_detection_component:
+  ros__parameters:
+    enable_floor_detection: true
+    # LiDAR 틸트 각도 [deg] (URDF에서 rpy=0 이므로 일단 0)
+    tilt_deg: 0.0
+
+    # 바닥 기준 Ouster OS1 센서 중심 높이 [m]
+    sensor_height: 0.34
+
+    # [sensor_height - height_clip_range, sensor_height + height_clip_range]
+    # => [약 0.0, 0.74]m 범위 포인트만 사용
+    height_clip_range: 0.4
+
+    floor_pts_thresh: 512
+    floor_normal_thresh_deg: 10.0
+
+    enable_normal_filtering: true
+    normal_filter_thresh_deg: 20.0

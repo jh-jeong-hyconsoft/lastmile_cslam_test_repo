@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>mrg_slam</name>
+  <version>0.0.0</version>
+  <description>The mrg_slam package</description>
+
+  <maintainer email="serov@uni-bremen.de">Andreas Serov</maintainer>
+
+  <license>BSD</license>
+
+  <!-- ROS2: Dependencies needed to compile this package -->
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <depend>rclcpp_components</depend> <!-- ROS2 componets aka ROS1 nodelets -->
+  <depend>tf2</depend>
+  <depend>tf2_ros</depend>
+  <depend>tf2_geometry_msgs</depend>
+  <depend>tf2_eigen</depend>
+  <depend>ndt_omp</depend>
+  <depend>fast_gicp</depend>
+  <depend>small_gicp</depend>
+  <depend>pcl_ros</depend>
+  <depend>rclcpp</depend>
+  <depend>geodesy</depend>
+  <depend>std_msgs</depend>
+  <depend>nmea_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>geographic_msgs</depend>
+  <depend>visualization_msgs</depend>
+  <depend>mrg_slam_msgs</depend>
+  <depend>geographiclib</depend>
+  <!-- ROS2 python dependencies -->
+  <buildtool_depend>ament_cmake_python</buildtool_depend>
+  <depend>rclpy</depend>
+
+  <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-scipy</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-scipy</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 2">python-progressbar</exec_depend>
+  <exec_depend condition="$ROS_PYTHON_VERSION == 3">python3-progressbar</exec_depend>
+
+  <export> 
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

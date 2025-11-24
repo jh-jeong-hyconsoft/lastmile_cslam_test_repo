@@ -1,0 +1,33 @@
+# Build and install artifacts
+**/build/
+**/build_isolated/
+**/install/
+**/devel/
+**/devel_isolated/
+**/log/
+log/
+**/logs/
+
+# Recorded/bag data
+*.db3
+*.bag
+*.bag.active
+rosbag2_*/
+test_rosbag/
+
+# Windows ADS leftovers
+*Zone.Identifier*
+
+# ROS/colcon metadata
+colcon.meta
+
+# Editor and OS files
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
+
+# Python cache
+__pycache__/
+*.pyc
