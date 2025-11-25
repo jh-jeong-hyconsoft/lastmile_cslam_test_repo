@@ -60,6 +60,11 @@ scan_matching_odometry_component:
     enable_robot_odometry_init_guess: true
     enable_imu_frontend: false
 
+    publish_pose_with_covariance: true
+    publish_map_pose: true
+    map_frame_id: "map"
+    pose_cov_frame_id: "map" 
+
 # MrgSlamComponent (백엔드 그래프)
 mrg_slam_component:
   ros__parameters:
@@ -72,12 +77,14 @@ mrg_slam_component:
     use_custom_inf_matrix_first_node: true
     graph_update_interval: 0.5          # 실내: 잦은 최적화
 
-    candidate_max_xy_distance: 1.0
-    fitness_score_thresh: 0.7
-    registration_method: "NDT_OMP"
+    candidate_max_xy_distance: 8.0
+    fitness_score_thresh: 2.0
+    registration_method: "SMALL_GICP"
 
     enable_keyframe_event_publish: true
     keyframe_event_downsample_resolution: 0.3
+    reg_max_correspondence_distance: 2.0
+    use_planar_registration_guess: true
 
     publish_slam_pose_with_covariance: true
     slam_pose_cov_base_pos: 0.009

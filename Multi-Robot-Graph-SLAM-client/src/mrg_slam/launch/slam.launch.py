@@ -54,6 +54,7 @@ def generate_nodes(context, *args, **kwargs):
     prefilter_cfg["base_link_frame"] = f"{robot_ns}/{prefilter_cfg['base_link_frame']}"
     smo_cfg["odom_frame_id"] = f"{robot_ns}/{smo_cfg['odom_frame_id']}"
     smo_cfg["robot_odom_frame_id"] = f"{robot_ns}/{smo_cfg['robot_odom_frame_id']}"
+    smo_cfg["map_frame_id"] = f"{robot_ns}/{smo_cfg['map_frame_id']}"
 
     slam_map_frame = slam_cfg.get("map_frame_id", "map")
     slam_odom_frame = slam_cfg.get("odom_frame_id", "odom")

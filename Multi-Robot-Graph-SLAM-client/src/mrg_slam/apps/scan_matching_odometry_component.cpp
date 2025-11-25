@@ -9,6 +9,7 @@
 #include <tf2_ros/transform_broadcaster.h>
 #include <tf2_ros/transform_listener.h>
 
+#include <geometry_msgs/msg/pose_stamped.hpp>
 #include <geometry_msgs/msg/pose_with_covariance_stamped.hpp>
 #include <geometry_msgs/msg/transform_stamped.hpp>
 #include <iostream>
@@ -77,6 +78,13 @@ public:
         trans_pub_  = create_publisher<geometry_msgs::msg::TransformStamped>( "scan_matching_odometry/transform", rclcpp::QoS( 32 ) );
         status_pub_ = create_publisher<mrg_slam_msgs::msg::ScanMatchingStatus>( "scan_matching_odometry/status", rclcpp::QoS( 8 ) );
         aligned_points_pub_ = create_publisher<sensor_msgs::msg::PointCloud2>( "scan_matching_odometry/aligned_points", rclcpp::QoS( 32 ) );
+        if( get_parameter( "publish_pose_with_covariance" ).as_bool() ) {
+            pose_cov_pub_ = create_publisher<geometry_msgs::msg::PoseWithCovarianceStamped>( "scan_matching_odometry/pose_cov",
+                                                                                             rclcpp::QoS( 32 ) );
+        }
+        if( get_parameter( "publish_map_pose" ).as_bool() ) {
+            pose_pub_map_ = create_publisher<geometry_msgs::msg::PoseStamped>( "scan_matching_odometry/pose", rclcpp::QoS( 32 ) );
+        }
 
         // Initialize the transform broadcaster
         tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>( *this );
@@ -99,6 +107,7 @@ private:
     {
         // Declare and set ROS2 parameters
         declare_parameter<std::string>( "odom_frame_id", "odom" );
+        declare_parameter<std::string>( "map_frame_id", "map" );
 
         declare_parameter<double>( "keyframe_delta_translation", 0.25 );
         declare_parameter<double>( "keyframe_delta_angle", 0.15 );
@@ -132,6 +141,37 @@ private:
         declare_parameter<int>( "reg_correspondence_randomness", 20 );
         declare_parameter<double>( "reg_resolution", 1.0 );
         declare_parameter<std::string>( "reg_nn_search_method", "DIRECT7" );
+
+        // Pose covariance publish (front-end quality to EKF 등)
+        declare_parameter<bool>( "publish_pose_with_covariance", false );
+        declare_parameter<double>( "pose_cov_base_pos", 0.02 );
+        declare_parameter<double>( "pose_cov_base_rot", 0.03 );
+        declare_parameter<double>( "pose_cov_fitness_ref", 0.5 );
+        declare_parameter<double>( "pose_cov_fitness_scale", 5.0 );
+        declare_parameter<std::string>( "pose_cov_frame_id", "" );  // empty -> use map_frame_id
+        declare_parameter<bool>( "publish_map_pose", false );
+    }
+
+    /**
+     * @brief lookup map -> odom transform and return as matrix
+     */
+    bool lookup_map_to_odom( const rclcpp::Time& stamp, const std::string& map_frame_id, const std::string& odom_frame_id,
+                             Eigen::Matrix4f& out_pose )
+    {
+        geometry_msgs::msg::TransformStamped tf;
+        try {
+            if( tf_buffer_->canTransform( map_frame_id, odom_frame_id, stamp, rclcpp::Duration( 0, 20000000 ) ) ) {
+                tf = tf_buffer_->lookupTransform( map_frame_id, odom_frame_id, stamp, rclcpp::Duration( 0, 20000000 ) );
+            } else {
+                tf = tf_buffer_->lookupTransform( map_frame_id, odom_frame_id, rclcpp::Time( 0 ), rclcpp::Duration( 0, 20000000 ) );
+                RCLCPP_WARN( get_logger(), "Using latest TF for map->%s (stamp unavailable)", odom_frame_id.c_str() );
+            }
+            out_pose = tf2isometry( tf ).matrix().cast<float>();
+            return true;
+        } catch( const tf2::TransformException& ex ) {
+            RCLCPP_WARN( get_logger(), "Failed to lookup map->%s: %s", odom_frame_id.c_str(), ex.what() );
+            return false;
+        }
     }
 
     /**
@@ -404,6 +444,9 @@ private:
             aligned_points_pub_->publish( aligned_ros2 );
         }
 
+        // Publish pose with covariance (front-end quality)
+        publish_pose_covariance( stamp, cloud->header.frame_id, publish_odom );
+
         return publish_odom;
     }
 
@@ -442,6 +485,77 @@ private:
         odom.twist.twist.angular.z = 0.0;
 
         odom_pub_->publish( odom );
+    }
+
+    /**
+     * @brief publish pose with covariance derived from registration fitness
+     */
+    void publish_pose_covariance( const rclcpp::Time& stamp, const std::string& base_frame_id, const Eigen::Matrix4f& pose )
+    {
+        if( !pose_cov_pub_ ) {
+            return;
+        }
+
+        geometry_msgs::msg::PoseWithCovarianceStamped cov_msg;
+        cov_msg.header.stamp    = stamp.operator builtin_interfaces::msg::Time();
+        std::string pose_cov_frame = get_parameter( "pose_cov_frame_id" ).as_string();
+        if( pose_cov_frame.empty() ) {
+            pose_cov_frame = get_parameter( "map_frame_id" ).as_string();
+        }
+
+        Eigen::Matrix4f pose_out = pose;
+        // If target frame differs, try to transform odom->map
+        std::string odom_frame_resolved = get_parameter( "odom_frame_id" ).as_string();
+        std::string map_frame_resolved  = get_parameter( "map_frame_id" ).as_string();
+        if( pose_cov_frame == map_frame_resolved && pose_cov_frame != odom_frame_resolved ) {
+            Eigen::Matrix4f map_to_odom;
+            if( lookup_map_to_odom( stamp, pose_cov_frame, odom_frame_resolved, map_to_odom ) ) {
+                pose_out = map_to_odom * pose;  // pose is odom->base, transform to map->base
+            }
+        }
+
+        cov_msg.header.frame_id = pose_cov_frame;
+        cov_msg.pose.pose       = isometry2pose( Eigen::Isometry3f( pose_out ).cast<double>() );
+
+        double scale = 1.0;
+        double fitness_ref   = get_parameter( "pose_cov_fitness_ref" ).as_double();
+        double fitness_scale = get_parameter( "pose_cov_fitness_scale" ).as_double();
+        if( fitness_ref > 0.0 ) {
+            double ratio  = registration_->getFitnessScore() / fitness_ref;
+            double capped = std::min( std::max( ratio, 0.0 ), fitness_scale );
+            scale += capped;
+        }
+
+        double pos_var = get_parameter( "pose_cov_base_pos" ).as_double() * scale;
+        double rot_var = get_parameter( "pose_cov_base_rot" ).as_double() * scale;
+
+        std::fill( cov_msg.pose.covariance.begin(), cov_msg.pose.covariance.end(), 0.0 );
+        cov_msg.pose.covariance[0]  = pos_var;
+        cov_msg.pose.covariance[7]  = pos_var;
+        cov_msg.pose.covariance[14] = pos_var;
+        cov_msg.pose.covariance[21] = rot_var;
+        cov_msg.pose.covariance[28] = rot_var;
+        cov_msg.pose.covariance[35] = rot_var;
+
+        pose_cov_pub_->publish( cov_msg );
+
+        publish_pose_map( stamp, base_frame_id, pose_out, pose_cov_frame );
+    }
+
+    /**
+     * @brief publish PoseStamped in map (or configured) frame and optional TF
+     */
+    void publish_pose_map( const rclcpp::Time& stamp, const std::string& base_frame_id, const Eigen::Matrix4f& pose_out,
+                           const std::string& pose_frame )
+    {
+        if( !pose_pub_map_ ) {
+            return;
+        }
+        geometry_msgs::msg::PoseStamped pose_msg;
+        pose_msg.header.stamp    = stamp.operator builtin_interfaces::msg::Time();
+        pose_msg.header.frame_id = pose_frame;
+        pose_msg.pose            = isometry2pose( Eigen::Isometry3f( pose_out ).cast<double>() );
+        pose_pub_map_->publish( pose_msg );
     }
 
 
@@ -500,6 +614,8 @@ private:
     rclcpp::Publisher<geometry_msgs::msg::TransformStamped>::SharedPtr   trans_pub_;
     rclcpp::Publisher<mrg_slam_msgs::msg::ScanMatchingStatus>::SharedPtr status_pub_;
     rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr          aligned_points_pub_;
+    rclcpp::Publisher<geometry_msgs::msg::PoseWithCovarianceStamped>::SharedPtr pose_cov_pub_;
+    rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr pose_pub_map_;
 
     std::shared_ptr<tf2_ros::TransformListener>    tf_listener_;
     std::unique_ptr<tf2_ros::Buffer>               tf_buffer_;
