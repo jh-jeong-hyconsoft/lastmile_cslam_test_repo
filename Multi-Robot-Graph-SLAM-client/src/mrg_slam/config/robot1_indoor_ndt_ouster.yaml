@@ -13,7 +13,7 @@ prefiltering_component:
     base_link_frame: "base_link"        # launch에서 robot_namespace prefix
 
     downsample_method: "VOXELGRID"
-    downsample_resolution: 0.15         # 실내 고밀도
+    downsample_resolution: 0.3         # 실내 고밀도
     downsample_min_points_per_voxel: 1
 
     outlier_removal_method: "RADIUS"
@@ -40,18 +40,18 @@ scan_matching_odometry_component:
     robot_odom_frame_id: "odom"
 
     downsample_method: "VOXELGRID"
-    downsample_resolution: 0.1
+    downsample_resolution: 0.3
     downsample_min_points_per_voxel: 1
 
-    keyframe_delta_translation: 0.5    # 실내 촘촘
-    keyframe_delta_angle: 0.052
+    keyframe_delta_translation: 0.8    # 실내 촘촘
+    keyframe_delta_angle: 0.01
     keyframe_delta_time: 3.0
 
     registration_method: "NDT_OMP"
     reg_num_threads: 8
     reg_transformation_epsilon: 0.01
-    reg_maximum_iterations: 40
-    reg_max_correspondence_distance: 1.5
+    reg_maximum_iterations: 60
+    reg_max_correspondence_distance: 2.0
     reg_use_reciprocal_correspondences: false
     reg_correspondence_randomness: 20
     reg_resolution: 0.5                 # NDT voxel
@@ -70,14 +70,14 @@ mrg_slam_component:
     g2o_solver_type: "lm_var_cholmod"
     g2o_solver_num_iterations: 384
     use_custom_inf_matrix_first_node: true
-    graph_update_interval: 2.0          # 실내: 잦은 최적화
+    graph_update_interval: 0.5          # 실내: 잦은 최적화
 
-    candidate_max_xy_distance: 5.0
-    fitness_score_thresh: 0.4
+    candidate_max_xy_distance: 1.0
+    fitness_score_thresh: 0.7
     registration_method: "NDT_OMP"
 
     enable_keyframe_event_publish: true
-    keyframe_event_downsample_resolution: 0.5
+    keyframe_event_downsample_resolution: 0.3
 
     publish_slam_pose_with_covariance: true
     slam_pose_cov_base_pos: 0.009
