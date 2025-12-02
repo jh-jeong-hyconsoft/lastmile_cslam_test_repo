@@ -13,20 +13,21 @@ prefiltering_component:
     base_link_frame: "base_link"        # launch에서 robot_namespace prefix
 
     downsample_method: "VOXELGRID"
-    downsample_resolution: 0.3         # 실내 고밀도
+    downsample_resolution: 0.2         # 실내 고밀도
     downsample_min_points_per_voxel: 1
 
-    outlier_removal_method: "RADIUS"
+    # Outlier removal - 더 완화
+    outlier_removal_method: "RADIUS"  # STATISTICAL → RADIUS (덜 엄격)
     statistical_mean_k: 30
-    statistical_stddev: 1.2
-    radius_radius: 0.4
+    statistical_stddev: 1.5  # 1.0 → 1.5 (더 완화)
+    radius_radius: 0.8  # 0.5 → 0.8
     radius_min_neighbors: 2
 
     enable_distance_filter: true
-    distance_near_thresh: 1.0
-    distance_far_thresh: 30.0           # 실내/복도 범위
+    distance_near_thresh: 0.8  # 0.5 → 0.8 (완화)
+    distance_far_thresh: 20.0  # 15.0 → 20.0 (실내+복도)
 
-    enable_deskewing: false
+    enable_deskewing: true
     scan_period: 0.05                   # OS1 20Hz ≈ 0.05s
 
     filtered_points_publish_rate: 1.5   # Hz, 실내 빠른 업데이트
@@ -40,10 +41,10 @@ scan_matching_odometry_component:
     robot_odom_frame_id: "odom"
 
     downsample_method: "VOXELGRID"
-    downsample_resolution: 0.3
+    downsample_resolution: 0.2
     downsample_min_points_per_voxel: 1
 
-    keyframe_delta_translation: 0.8    # 실내 촘촘
+    keyframe_delta_translation: 0.5    # 실내 촘촘
     keyframe_delta_angle: 0.01
     keyframe_delta_time: 3.0
 
@@ -54,7 +55,7 @@ scan_matching_odometry_component:
     reg_max_correspondence_distance: 2.0
     reg_use_reciprocal_correspondences: false
     reg_correspondence_randomness: 20
-    reg_resolution: 0.5                 # NDT voxel
+    reg_resolution: 0.4                 # NDT voxel
     reg_nn_search_method: "DIRECT7"
 
     enable_robot_odometry_init_guess: true
@@ -63,7 +64,9 @@ scan_matching_odometry_component:
     publish_pose_with_covariance: true
     publish_map_pose: true
     map_frame_id: "map"
-    pose_cov_frame_id: "map" 
+    pose_cov_frame_id: "odom" 
+    pose_cov_base_pos: 0.005
+    pose_cov_base_rot: 0.01
 
 # MrgSlamComponent (백엔드 그래프)
 mrg_slam_component:
@@ -87,14 +90,18 @@ mrg_slam_component:
     use_planar_registration_guess: true
 
     publish_slam_pose_with_covariance: true
-    slam_pose_cov_base_pos: 0.009
-    slam_pose_cov_base_rot: 0.01
+    slam_pose_cov_base_pos: 0.02
+    slam_pose_cov_base_rot: 0.04
     slam_pose_cov_fitness_ref: 0.4
     slam_pose_cov_fitness_scale: 5.0
 
-    map_cloud_resolution: 0.1
-    map_cloud_min_points_per_voxel: 1
-    map_cloud_distance_far_thresh: 40.0
+    # Map 생성 - 매우 완화
+    map_cloud_resolution: 0.05
+    map_cloud_min_points_per_voxel: 1  # 2 → 1 (최대 완화)
+    map_cloud_distance_far_thresh: 25.0  # 20.0 → 25.0
+
+    # Floor detection 활성화
+    enable_floor_coeffs: true
 
     enable_gps: false
     save_graph: false
@@ -102,7 +109,7 @@ mrg_slam_component:
 # KeyframeUploaderComponent
 keyframe_uploader:
   ros__parameters:
-    enable_upload: true
+    enable_upload: false
     rate_limit: 1.0                     # Hz
 
 # FloorDetectionComponent
@@ -110,9 +117,9 @@ floor_detection_component:
   ros__parameters:
     enable_floor_detection: true
     tilt_deg: 0.0
-    sensor_height: 0.34
-    height_clip_range: 0.4
-    floor_pts_thresh: 512
-    floor_normal_thresh_deg: 10.0
+    sensor_height: 0.109  # 0.34 → 0.109 (URDF: base_link z=0.109)
+    height_clip_range: 0.5  # 0.4 → 0.5 (더 넓게)
+    floor_pts_thresh: 256  # 512 → 256 (실내용)
+    floor_normal_thresh_deg: 15.0  # 10.0 → 15.0 (더 관대)
     enable_normal_filtering: true
     normal_filter_thresh_deg: 20.0

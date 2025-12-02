@@ -129,6 +129,7 @@ def generate_nodes(context, *args, **kwargs):
         composable_node_descriptions=composable_nodes,
         output="screen",
         parameters=[shared_params],
+        arguments=['--ros-args', '--log-level', 'info'],
     )
 
     return [container]

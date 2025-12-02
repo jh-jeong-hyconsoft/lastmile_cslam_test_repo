@@ -182,17 +182,21 @@ private:
         std::string odom_frame_id = get_parameter( "odom_frame_id" ).as_string();
         geometry_msgs::msg::TransformStamped tf;
 
+        RCLCPP_DEBUG_STREAM( get_logger(), "[TS_DEBUG] lookup_odom_to_cloud: requested_stamp=" << stamp.seconds() 
+                           << ", odom_frame=" << odom_frame_id << ", cloud_frame=" << cloud_frame );
+
         try {
             if( tf_buffer_->canTransform( odom_frame_id, cloud_frame, stamp, rclcpp::Duration( 0, 20000000 ) ) ) {
                 tf = tf_buffer_->lookupTransform( odom_frame_id, cloud_frame, stamp, rclcpp::Duration( 0, 20000000 ) );
+                RCLCPP_DEBUG_STREAM( get_logger(), "[TS_DEBUG] lookup_odom_to_cloud SUCCESS: tf_stamp=" << rclcpp::Time(tf.header.stamp).seconds() );
             } else {
                 tf = tf_buffer_->lookupTransform( odom_frame_id, cloud_frame, rclcpp::Time( 0 ), rclcpp::Duration( 0, 20000000 ) );
-                RCLCPP_WARN( get_logger(), "Using latest TF for odom->%s (stamp unavailable)", cloud_frame.c_str() );
+                RCLCPP_DEBUG_STREAM( get_logger(), "[TS_DEBUG] lookup_odom_to_cloud FALLBACK to Time(0): tf_stamp=" << rclcpp::Time(tf.header.stamp).seconds() << ", cloud_frame=" << cloud_frame );
             }
             out_pose = tf2isometry( tf ).matrix().cast<float>();
             return true;
         } catch( const tf2::TransformException& ex ) {
-            RCLCPP_WARN( get_logger(), "Failed to lookup odom->%s: %s", cloud_frame.c_str(), ex.what() );
+            RCLCPP_WARN( get_logger(), "[TS_DEBUG] lookup_odom_to_cloud FAILED: %s", ex.what() );
             return false;
         }
     }
@@ -209,6 +213,8 @@ private:
 
         pcl::PointCloud<PointT>::Ptr cloud( new pcl::PointCloud<PointT>() );
         pcl::fromROSMsg( *cloud_msg, *cloud );
+
+        RCLCPP_DEBUG_STREAM( get_logger(), "[TS_DEBUG] cloud_callback: cloud_stamp=" << cloud_msg->header.stamp.sec << "." << cloud_msg->header.stamp.nanosec );
 
         Eigen::Matrix4f pose = matching( cloud_msg->header.stamp, cloud );
 
@@ -297,13 +303,17 @@ private:
         } else if( get_parameter( "enable_robot_odometry_init_guess" ).as_bool() && !( prev_time_.nanoseconds() == 0 ) ) {
             geometry_msgs::msg::TransformStamped transform;
             std::string                          robot_odom_frame_id = get_parameter( "robot_odom_frame_id" ).as_string();
+            
+            RCLCPP_DEBUG_STREAM( get_logger(), "[TS_DEBUG] TF lookup: target_time=" << stamp.seconds() << ", source_time=" << prev_time_.seconds() );
+            
             // According to https://answers.ros.org/question/312648/could-not-find-waitfortransform-function-in-tf2-package-of-ros2/ the
-            // equivalent for waitforTransform is to use canTransform of tfBuffer with a timeout
+            // Equivalent for waitforTransform is to use canTransform of tfBuffer with a timeout
             if( tf_buffer_->canTransform( cloud->header.frame_id, stamp, cloud->header.frame_id, prev_time_, robot_odom_frame_id,
-                                          rclcpp::Duration( 0, 0 ) ) ) {
+                                          rclcpp::Duration::from_seconds( 0.1 ) ) ) {
                 try {
                     transform = tf_buffer_->lookupTransform( cloud->header.frame_id, stamp, cloud->header.frame_id, prev_time_,
-                                                             robot_odom_frame_id );
+                                                             robot_odom_frame_id, rclcpp::Duration::from_seconds( 0.1 ) );
+                    RCLCPP_DEBUG_STREAM( get_logger(), "[TS_DEBUG] TF lookup SUCCESS with exact timestamps" );
                 } catch( const tf2::TransformException& ex ) {
                     RCLCPP_WARN( get_logger(),
                                  "Could not look up transform with target frame %s, target time %9.f, source frame %s, source time %.9f, "
@@ -316,6 +326,7 @@ private:
                 try {
                     transform = tf_buffer_->lookupTransform( cloud->header.frame_id, rclcpp::Time( 0 ), cloud->header.frame_id, prev_time_,
                                                              robot_odom_frame_id );
+                    RCLCPP_WARN( get_logger(), "[TS_DEBUG] TF lookup FALLBACK to Time(0) - timestamps may be mismatched" );
                 } catch( const tf2::TransformException& ex ) {
                     RCLCPP_WARN( get_logger(),
                                  "Could not look up transform with target frame %s, target time %9.f, source frame %s, source time %.9f, "
@@ -339,10 +350,11 @@ private:
 
             if( rclcpp::Time( transform.header.stamp ).nanoseconds() == 0 ) {
                 RCLCPP_WARN_STREAM( get_logger(),
-                                    "failed to look up transform between " << cloud->header.frame_id << " and " << robot_odom_frame_id );
+                                    "[TS_DEBUG] failed to look up transform between " << cloud->header.frame_id << " and " << robot_odom_frame_id );
             } else {
                 msf_source = "odometry";
                 msf_delta  = tf2isometry( transform ).cast<float>();
+                RCLCPP_DEBUG_STREAM( get_logger(), "[TS_DEBUG] robot_odom TF SUCCESS: tf_stamp=" << rclcpp::Time(transform.header.stamp).seconds() );
             }
         }
 
@@ -457,6 +469,8 @@ private:
      */
     void publish_odometry( const rclcpp::Time& stamp, const std::string& base_frame_id, const Eigen::Matrix4f& pose )
     {
+        RCLCPP_DEBUG_STREAM( get_logger(), "[TS_DEBUG] publish_odometry: odom_stamp=" << stamp.seconds() );
+        
         // publish transform stamped for IMU integration
         std::string                          odom_frame_id = get_parameter( "odom_frame_id" ).as_string();
         geometry_msgs::msg::TransformStamped odom_trans    = matrix2transform( stamp, pose, odom_frame_id, base_frame_id );
@@ -492,16 +506,18 @@ private:
      */
     void publish_pose_covariance( const rclcpp::Time& stamp, const std::string& base_frame_id, const Eigen::Matrix4f& pose )
     {
-        if( !pose_cov_pub_ ) {
+        if( !odom_pub_ ) {
             return;
         }
-
         geometry_msgs::msg::PoseWithCovarianceStamped cov_msg;
         cov_msg.header.stamp    = stamp.operator builtin_interfaces::msg::Time();
         std::string pose_cov_frame = get_parameter( "pose_cov_frame_id" ).as_string();
         if( pose_cov_frame.empty() ) {
             pose_cov_frame = get_parameter( "map_frame_id" ).as_string();
         }
+
+        RCLCPP_DEBUG_STREAM( get_logger(), "[FRONTEND_POSE_DEBUG] ==================" );
+        RCLCPP_DEBUG_STREAM( get_logger(), "[FRONTEND_POSE_DEBUG] odom->base (input): [" << pose(0,3) << ", " << pose(1,3) << ", " << pose(2,3) << "]" );
 
         Eigen::Matrix4f pose_out = pose;
         // If target frame differs, try to transform odom->map
@@ -510,9 +526,17 @@ private:
         if( pose_cov_frame == map_frame_resolved && pose_cov_frame != odom_frame_resolved ) {
             Eigen::Matrix4f map_to_odom;
             if( lookup_map_to_odom( stamp, pose_cov_frame, odom_frame_resolved, map_to_odom ) ) {
+                RCLCPP_DEBUG_STREAM( get_logger(), "[FRONTEND_POSE_DEBUG] map->odom: [" << map_to_odom(0,3) << ", " << map_to_odom(1,3) << ", " << map_to_odom(2,3) << "]" );
                 pose_out = map_to_odom * pose;  // pose is odom->base, transform to map->base
+                RCLCPP_DEBUG_STREAM( get_logger(), "[FRONTEND_POSE_DEBUG] map->base (output): [" << pose_out(0,3) << ", " << pose_out(1,3) << ", " << pose_out(2,3) << "]" );
+            } else {
+                RCLCPP_WARN_STREAM( get_logger(), "[FRONTEND_POSE_DEBUG] Failed to lookup map->odom, using odom frame" );
             }
+        } else {
+            RCLCPP_DEBUG_STREAM( get_logger(), "[FRONTEND_POSE_DEBUG] Output frame: " << pose_cov_frame << " (no map->odom transform needed)" );
         }
+        RCLCPP_DEBUG_STREAM( get_logger(), "[FRONTEND_POSE_DEBUG] pose_cov_frame: " << pose_cov_frame );
+        RCLCPP_DEBUG_STREAM( get_logger(), "[FRONTEND_POSE_DEBUG] ==================" );
 
         cov_msg.header.frame_id = pose_cov_frame;
         cov_msg.pose.pose       = isometry2pose( Eigen::Isometry3f( pose_out ).cast<double>() );

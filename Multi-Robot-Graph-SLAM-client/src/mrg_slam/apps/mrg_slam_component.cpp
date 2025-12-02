@@ -563,6 +563,24 @@ private:
         cov_msg.header.stamp    = kf->stamp;
         cov_msg.header.frame_id = map_frame_id_;
         cov_msg.pose.pose       = isometry2pose( kf->node->estimate() );
+        
+        // Debug logging for abnormal pose values
+        const auto& p = cov_msg.pose.pose.position;
+
+        RCLCPP_DEBUG_STREAM(get_logger(), "[BACKEND_POSE_DEBUG] ==================");
+        RCLCPP_DEBUG_STREAM(get_logger(), "[BACKEND_POSE_DEBUG] map->base (output): [" << p.x << ", " << p.y << ", " << p.z << "]");
+        RCLCPP_DEBUG_STREAM(get_logger(), "[BACKEND_POSE_DEBUG] Node estimate (map->base):\n" << kf->node->estimate().matrix());
+        
+        Eigen::Vector3d odom_pos = kf->odom.translation();
+        RCLCPP_DEBUG_STREAM(get_logger(), "[BACKEND_POSE_DEBUG] odom->base: [" << odom_pos.x() << ", " << odom_pos.y() << ", " << odom_pos.z() << "]");
+        
+        {
+            std::lock_guard<std::mutex> lock( trans_odom2map_mutex_ );
+            Eigen::Vector3d map2odom_pos = trans_odom2map_.translation();
+            RCLCPP_DEBUG_STREAM(get_logger(), "[BACKEND_POSE_DEBUG] map->odom (trans_odom2map_): [" << map2odom_pos.x() << ", " << map2odom_pos.y() << ", " << map2odom_pos.z() << "]");
+        }
+        RCLCPP_DEBUG_STREAM(get_logger(), "[BACKEND_POSE_DEBUG] ==================");
+
 
         double scale = 1.0;
         if( slam_pose_cov_fitness_ref_ > 0.0 ) {
@@ -624,8 +642,7 @@ private:
         
         keyframe_event_pub_->publish( kf_event );
         
-        RCLCPP_DEBUG( get_logger(), "Published keyframe event: uuid=%s, accum_dist=%.2f, cloud_size=%zu", 
-                     kf_event.keyframe_uuid.c_str(), accum_d, ds_cloud->size() );
+        RCLCPP_INFO_STREAM( get_logger(), "Published keyframe event: uuid=" << kf_event.keyframe_uuid << ", accum_dist=" << accum_d << ", cloud_size=" << ds_cloud->size() );
     }
 
     void slam_pose_broadcast_callback( mrg_slam_msgs::msg::PoseWithName::ConstSharedPtr slam_pose_msg )

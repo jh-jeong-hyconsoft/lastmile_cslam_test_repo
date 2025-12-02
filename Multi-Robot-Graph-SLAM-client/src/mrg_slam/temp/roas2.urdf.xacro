@@ -1,0 +1,144 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="roas">
+  
+  <material name="Black"><color rgba="${1/255} ${1/255} ${1/255} 1.0"/></material>
+  <material name="dark_grey"><color rgba="0.2 0.2 0.2 1.0"/></material>
+
+  <xacro:property name="PI" value="3.1415926535897931"/>
+  <xacro:include filename="$(find roas2_bringup)/urdf/include/scout_v2.xacro" />
+
+  <!-- Frame -->
+  <link name="main_frame_link">
+  <visual>
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <geometry>
+      <mesh filename="package://roas2_bringup/meshes/Frame.stl" />
+    </geometry>
+    <material name="dark_grey"/>
+  </visual>
+  <collision>
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <geometry>
+      <mesh filename="package://roas2_bringup/meshes/Frame.stl" />
+    </geometry>
+  </collision>
+  </link>
+
+  <joint name="main_frame_joint" type="fixed">
+    <parent link="base_footprint" />
+    <child link="main_frame_link" />
+    <origin xyz="0 0 0.1349" rpy="0 0 0" />
+  </joint>
+  
+  <!-- Ouster -->
+  <link name="os_sensor"/> 
+  
+  <joint name="os_sensor_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="os_sensor" />
+    <!-- <origin xyz="0.5437 0.0021 0.3442" rpy="0.0016 0.0154 0.0" /> -->
+    <origin xyz="0.530 0 0.109" rpy="0 0 0" />
+  </joint>
+  
+  <!-- Sonar 1 (right) -->
+  <link name="S2"/>
+  
+  <joint name="S2_joint" type="fixed">
+    <parent link="base_footprint" />
+    <child link="S2" />
+    <origin xyz="0 0.3 0.364" rpy="0 0 ${PI/2}" />
+  </joint>
+  
+  <!-- Sonar 2 (left) -->
+  <link name="S1"/>
+  
+  <joint name="S1_joint" type="fixed">
+    <parent link="base_footprint" />
+    <child link="S1" />
+    <origin xyz="0 -0.3 0.364" rpy="0 0 -${PI/2}" />
+  </joint>
+  
+  <!-- Sonar 3 -->
+  <link name="S3"/>
+  
+  <joint name="S3_joint" type="fixed">
+    <parent link="base_footprint" />
+    <child link="S3" />
+    <origin xyz="-0.400 0.120 0.364" rpy="0 0 -${PI}" />
+  </joint>
+  
+  <!-- Sonar 4 -->
+  <link name="S4"/>
+  
+  <joint name="S4_joint" type="fixed">
+    <parent link="base_footprint" />
+    <child link="S4" />
+    <origin xyz="-0.400 -0.120 0.364" rpy="0 0 -${PI}" />
+  </joint>
+  
+  
+  <!-- Camera 1 -->
+  <link name="Cam1"/>
+  
+  <joint name="Cam1_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="Cam1" />
+    <origin xyz="0.575 0 0.0945" rpy="0 0 0" />
+  </joint>
+  
+  <!-- Camera 2 -->
+  <link name="Cam2"/>
+  
+  <joint name="Cam2_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="Cam2" />
+    <origin xyz="0 0.303 0.1815" rpy="0 0 ${PI/2}" />
+  </joint>
+  
+  <!-- Camera 3 -->
+  <link name="Cam3"/>
+  
+  <joint name="Cam3_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="Cam3" />
+    <origin xyz="0 -0.303 0.1815" rpy="0 0 -${PI/2}" />
+  </joint>
+  
+  <!-- Camera 4 -->
+  <link name="Cam4"/>
+  
+  <joint name="Cam4_joint" type="fixed">
+    <parent link="base_link" />
+    <child link="Cam4" />
+    <origin xyz="-0.403 0 0.1295" rpy="0 0 -${PI}" />
+  </joint>
+
+  <!-- GNSS -->
+  <link name="GNSS"/>
+
+  <joint name="GNSS_joint" type="fixed">
+      <parent link="main_frame_link" />
+      <child link="GNSS" />
+      <origin xyz="0.186 -0.184 0.213" rpy="0 0 0" />
+  </joint>
+
+  <!-- GNSS Antenna1 -->
+  <link name="GNSS_ant1"/>
+
+  <joint name="GNSS_ant1_joint" type="fixed">
+      <parent link="main_frame_link" />
+      <child link="GNSS_ant1" />
+      <origin xyz="0.454 0.354 0.205" rpy="0 0 0" />
+  </joint>
+
+  <!-- GNSS Antenna2 -->
+  <link name="GNSS_ant2"/>
+
+  <joint name="GNSS_ant2_joint" type="fixed">
+      <parent link="main_frame_link" />
+      <child link="GNSS_ant2" />
+      <origin xyz="-0.454 -0.354 0.205" rpy="0 0 0" />
+  </joint>
+
+</robot>
