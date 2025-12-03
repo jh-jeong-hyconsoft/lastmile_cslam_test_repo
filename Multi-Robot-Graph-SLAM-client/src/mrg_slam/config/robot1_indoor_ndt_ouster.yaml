@@ -1,10 +1,10 @@
 "/**":
   ros__parameters:
     robot_namespace: "robot1"
-    use_sim_time: true
+    use_sim_time: false
     lidar_points_topic: "/robot1/ouster/points"
     wheel_odom_topic: "/robot1/odom"
-    enable_slam_tf_broadcast: false
+    enable_slam_tf_broadcast: true
 
 # PrefilteringComponent (실내: 근거리·고밀도)
 prefiltering_component:
@@ -44,9 +44,9 @@ scan_matching_odometry_component:
     downsample_resolution: 0.15
     downsample_min_points_per_voxel: 1
 
-    keyframe_delta_translation: 1.0    # 실내 촘촘
-    keyframe_delta_angle: 0.01
-    keyframe_delta_time: 3.0
+    keyframe_delta_translation: 1.5    # 적당한 간격
+    keyframe_delta_angle: 0.5           # ~29도
+    keyframe_delta_time: 10.0           # 시간 기반 생성 억제
 
     registration_method: "FAST_GICP"
     reg_num_threads: 8
@@ -81,11 +81,20 @@ mrg_slam_component:
     g2o_solver_type: "lm_var_cholmod"
     g2o_solver_num_iterations: 384
     use_custom_inf_matrix_first_node: true
-    graph_update_interval: 0.5          # 실내: 잦은 최적화
+    graph_update_interval: 0.5
 
-    candidate_max_xy_distance: 8.0
-    fitness_score_thresh: 2.0
+    # Backend keyframe 간격
+    keyframe_delta_trans: 2.0
+    keyframe_delta_angle: 0.5
+
+    candidate_max_xy_distance: 15.0     # 8.0 → 15.0m (더 넓은 탐색)
+    fitness_score_thresh: 3.0           # 2.0 → 3.0 (완화)
     registration_method: "SMALL_GICP"
+    
+    # Loop closure consistency check - 대폭 완화
+    enable_loop_closure_consistency_check: true
+    loop_closure_consistency_max_delta_trans: 3.0   # 기본 0.25 → 3.0m
+    loop_closure_consistency_max_delta_angle: 45.0  # 기본 5.0 → 45.0도
 
     enable_keyframe_event_publish: true
     keyframe_event_downsample_resolution: 0.2
