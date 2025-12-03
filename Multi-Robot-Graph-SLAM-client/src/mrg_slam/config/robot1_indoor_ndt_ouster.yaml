@@ -24,8 +24,8 @@ prefiltering_component:
     radius_min_neighbors: 2
 
     enable_distance_filter: true
-    distance_near_thresh: 0.1  # 0.5 → 0.8 (완화)
-    distance_far_thresh: 5.0  # 15.0 → 20.0 (실내+복도)
+    distance_near_thresh: 0.1
+    distance_far_thresh: 10.0  # 5.0 → 10.0 (더 많은 특징점 사용)
 
     enable_deskewing: true
     scan_period: 0.05                   # OS1 20Hz ≈ 0.05s
@@ -44,29 +44,32 @@ scan_matching_odometry_component:
     downsample_resolution: 0.15
     downsample_min_points_per_voxel: 1
 
-    keyframe_delta_translation: 0.5    # 실내 촘촘
+    keyframe_delta_translation: 1.0    # 실내 촘촘
     keyframe_delta_angle: 0.01
     keyframe_delta_time: 3.0
 
-    registration_method: "NDT_OMP"
+    registration_method: "FAST_GICP"
     reg_num_threads: 8
-    reg_transformation_epsilon: 0.01
-    reg_maximum_iterations: 60
-    reg_max_correspondence_distance: 2.0
-    reg_use_reciprocal_correspondences: false
+    reg_transformation_epsilon: 0.001   # 0.01 → 0.001 (더 정밀한 수렴)
+    reg_maximum_iterations: 100         # 60 → 100 (더 많은 반복)
+    reg_max_correspondence_distance: 1.0  # 2.0 → 1.0 (잘못된 correspondence 감소)
+    reg_use_reciprocal_correspondences: true  # false → true (robust matching)
     reg_correspondence_randomness: 20
-    reg_resolution: 0.5                 # NDT voxel
+    reg_resolution: 0.3                 # 0.5 → 0.3 (더 정밀)
     reg_nn_search_method: "DIRECT7"
 
     enable_robot_odometry_init_guess: true
     enable_imu_frontend: false
 
     publish_pose_with_covariance: true
-    publish_map_pose: true
+    publish_map_pose: false
     map_frame_id: "map"
-    pose_cov_frame_id: "odom" 
-    pose_cov_base_pos: 0.005
-    pose_cov_base_rot: 0.01
+    # pcl_pose_front는 odom 프레임으로 발행 (EKF가 map->odom 계산 담당)
+    pose_cov_frame_id: "odom"
+    pose_cov_base_pos: 0.02
+    pose_cov_base_rot: 0.04
+    pose_cov_fitness_ref: 0.4
+    pose_cov_fitness_scale: 5.0
 
 # MrgSlamComponent (백엔드 그래프)
 mrg_slam_component:
@@ -94,6 +97,9 @@ mrg_slam_component:
     slam_pose_cov_base_rot: 0.04
     slam_pose_cov_fitness_ref: 0.4
     slam_pose_cov_fitness_scale: 5.0
+    
+    # Disable odom2map transform publishing (EKF handles map->odom TF)
+    publish_odom2map_transform: false
 
     # Map 생성 - 매우 완화
     map_cloud_resolution: 0.05

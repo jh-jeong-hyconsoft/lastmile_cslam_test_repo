@@ -38,8 +38,10 @@ private:
     rclcpp::Node::SharedPtr node_;
 
     bool              is_first_;
+    bool              initialized_;
     double            accum_distance_;
     Eigen::Isometry3d prev_keypose_;
+    Eigen::Isometry3d initial_pose_;
 };
 
 }  // namespace mrg_slam

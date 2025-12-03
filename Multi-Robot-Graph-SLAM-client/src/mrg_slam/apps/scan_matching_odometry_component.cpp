@@ -79,7 +79,7 @@ public:
         status_pub_ = create_publisher<mrg_slam_msgs::msg::ScanMatchingStatus>( "scan_matching_odometry/status", rclcpp::QoS( 8 ) );
         aligned_points_pub_ = create_publisher<sensor_msgs::msg::PointCloud2>( "scan_matching_odometry/aligned_points", rclcpp::QoS( 32 ) );
         if( get_parameter( "publish_pose_with_covariance" ).as_bool() ) {
-            pose_cov_pub_ = create_publisher<geometry_msgs::msg::PoseWithCovarianceStamped>( "scan_matching_odometry/pose_cov",
+            pose_cov_pub_ = create_publisher<geometry_msgs::msg::PoseWithCovarianceStamped>( "pcl_pose_front",
                                                                                              rclcpp::QoS( 32 ) );
         }
         if( get_parameter( "publish_map_pose" ).as_bool() ) {

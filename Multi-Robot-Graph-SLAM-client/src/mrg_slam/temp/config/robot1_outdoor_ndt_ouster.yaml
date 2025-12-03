@@ -59,6 +59,15 @@ scan_matching_odometry_component:
 
     enable_robot_odometry_init_guess: true
     enable_imu_frontend: false
+    
+    # Pose covariance publishing for EKF fusion
+    publish_pose_with_covariance: true
+    map_frame_id: "map"
+    pose_cov_frame_id: "map"
+    pose_cov_base_pos: 0.03
+    pose_cov_base_rot: 0.05
+    pose_cov_fitness_ref: 0.5
+    pose_cov_fitness_scale: 5.0
 
 # MrgSlamComponent
 mrg_slam_component:
@@ -84,6 +93,9 @@ mrg_slam_component:
     slam_pose_cov_base_rot: 0.015
     slam_pose_cov_fitness_ref: 0.6
     slam_pose_cov_fitness_scale: 6.0
+    
+    # Disable odom2map transform publishing (EKF handles map->odom TF)
+    publish_odom2map_transform: false
 
     map_cloud_resolution: 0.2
     map_cloud_min_points_per_voxel: 1

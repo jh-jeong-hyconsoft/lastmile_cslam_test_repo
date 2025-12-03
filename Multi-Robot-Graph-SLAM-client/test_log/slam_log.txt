@@ -1,0 +1,553 @@
+[INFO] [launch]: All log files can be found below /home/hycon_ubuntu/.ros/log/2025-12-03-14-24-49-513306-DESKTOP-21RKPKP-8101
+[INFO] [launch]: Default logging verbosity is set to INFO
+[robot_full_b_plan_mode] Loaded config for mode 'indoor': /home/hycon_ubuntu/workspace/lastmile_cslam_test_repo/Multi-Robot-Graph-SLAM-client/install/mrg_slam/share/mrg_slam/config/robot1_indoor_ndt_ouster.yaml
+[robot_full_b_plan_mode] FloorDetectionComponent not launched (missing params).
+[INFO] [component_container_mt-1]: process started with pid [8114]
+[component_container_mt-1] [INFO] [1764739489.840461615] [robot1.mrg_slam_full_container]: Load Library: /home/hycon_ubuntu/workspace/lastmile_cslam_test_repo/Multi-Robot-Graph-SLAM-client/install/mrg_slam/lib/libprefiltering_component.so
+[component_container_mt-1] [INFO] [1764739489.849469599] [robot1.mrg_slam_full_container]: Found class: rclcpp_components::NodeFactoryTemplate<mrg_slam::PrefilteringComponent>
+[component_container_mt-1] [INFO] [1764739489.849532445] [robot1.mrg_slam_full_container]: Instantiate class: rclcpp_components::NodeFactoryTemplate<mrg_slam::PrefilteringComponent>
+[component_container_mt-1] [INFO] [1764739489.857491152] [robot1.prefiltering_component]: Initializing prefiltering_component...
+[component_container_mt-1] [INFO] [1764739489.858817691] [robot1.prefiltering_component]: downsample: VOXELGRID 0.15
+[component_container_mt-1] [INFO] [1764739489.858878557] [robot1.prefiltering_component]: outlier_removal: RADIUS radius = 0.5, min_neighbors = 2
+[component_container_mt-1] [INFO] [1764739489.863581288] [robot1.prefiltering_component]: base_link_frame              robot1/base_link
+[component_container_mt-1] [INFO] [1764739489.863619632] [robot1.prefiltering_component]: distance_far_thresh          5.000000
+[component_container_mt-1] [INFO] [1764739489.863625262] [robot1.prefiltering_component]: distance_near_thresh         0.100000
+[component_container_mt-1] [INFO] [1764739489.863628747] [robot1.prefiltering_component]: downsample_method            VOXELGRID
+[component_container_mt-1] [INFO] [1764739489.863633395] [robot1.prefiltering_component]: downsample_min_points_per_voxel 1
+[component_container_mt-1] [INFO] [1764739489.863640288] [robot1.prefiltering_component]: downsample_resolution        0.150000
+[component_container_mt-1] [INFO] [1764739489.863643878] [robot1.prefiltering_component]: enable_deskewing             true
+[component_container_mt-1] [INFO] [1764739489.863647239] [robot1.prefiltering_component]: enable_distance_filter       true
+[component_container_mt-1] [INFO] [1764739489.863650291] [robot1.prefiltering_component]: outlier_removal_method       RADIUS
+[component_container_mt-1] [INFO] [1764739489.863653505] [robot1.prefiltering_component]: qos_overrides./clock.subscription.depth 1
+[component_container_mt-1] [INFO] [1764739489.863656672] [robot1.prefiltering_component]: qos_overrides./clock.subscription.durability volatile
+[component_container_mt-1] [INFO] [1764739489.863659897] [robot1.prefiltering_component]: qos_overrides./clock.subscription.history keep_last
+[component_container_mt-1] [INFO] [1764739489.863666104] [robot1.prefiltering_component]: qos_overrides./clock.subscription.reliability best_effort
+[component_container_mt-1] [INFO] [1764739489.863669487] [robot1.prefiltering_component]: qos_overrides./parameter_events.publisher.depth 1000
+[component_container_mt-1] [INFO] [1764739489.863672589] [robot1.prefiltering_component]: qos_overrides./parameter_events.publisher.durability volatile
+[component_container_mt-1] [INFO] [1764739489.863675634] [robot1.prefiltering_component]: qos_overrides./parameter_events.publisher.history keep_last
+[component_container_mt-1] [INFO] [1764739489.863678637] [robot1.prefiltering_component]: qos_overrides./parameter_events.publisher.reliability reliable
+[component_container_mt-1] [INFO] [1764739489.863681742] [robot1.prefiltering_component]: radius_min_neighbors         2
+[component_container_mt-1] [INFO] [1764739489.863685400] [robot1.prefiltering_component]: radius_radius                0.500000
+[component_container_mt-1] [INFO] [1764739489.863690533] [robot1.prefiltering_component]: scan_period                  0.050000
+[component_container_mt-1] [INFO] [1764739489.863693797] [robot1.prefiltering_component]: statistical_mean_k           30
+[component_container_mt-1] [INFO] [1764739489.863697148] [robot1.prefiltering_component]: statistical_stddev           1.500000
+[component_container_mt-1] [INFO] [1764739489.863700291] [robot1.prefiltering_component]: use_sim_time                 true
+[INFO] [launch_ros.actions.load_composable_nodes]: Loaded node '/robot1/prefiltering_component' in container '/robot1/mrg_slam_full_container'
+[component_container_mt-1] [INFO] [1764739489.867802587] [robot1.mrg_slam_full_container]: Load Library: /home/hycon_ubuntu/workspace/lastmile_cslam_test_repo/Multi-Robot-Graph-SLAM-client/install/mrg_slam/lib/libscan_matching_odometry_component.so
+[component_container_mt-1] [INFO] [1764739489.870128854] [robot1.mrg_slam_full_container]: Found class: rclcpp_components::NodeFactoryTemplate<mrg_slam::ScanMatchingOdometryComponent>
+[component_container_mt-1] [INFO] [1764739489.870199755] [robot1.mrg_slam_full_container]: Instantiate class: rclcpp_components::NodeFactoryTemplate<mrg_slam::ScanMatchingOdometryComponent>
+[component_container_mt-1] [INFO] [1764739489.873591796] [robot1.scan_matching_odometry_component]: Initializing scan_matching_odometry_component...
+[component_container_mt-1] [INFO] [1764739489.875706925] [robot1.scan_matching_odometry_component]: downsample: VOXELGRID 0.15
+[component_container_mt-1] registration: FAST_GICP
+[component_container_mt-1] [INFO] [1764739489.878867367] [robot1.scan_matching_odometry_component]: downsample_method            VOXELGRID
+[component_container_mt-1] [INFO] [1764739489.878917232] [robot1.scan_matching_odometry_component]: downsample_min_points_per_voxel 1
+[component_container_mt-1] [INFO] [1764739489.878925841] [robot1.scan_matching_odometry_component]: downsample_resolution        0.150000
+[component_container_mt-1] [INFO] [1764739489.878929672] [robot1.scan_matching_odometry_component]: enable_imu_frontend          false
+[component_container_mt-1] [INFO] [1764739489.878933089] [robot1.scan_matching_odometry_component]: enable_robot_odometry_init_guess true
+[component_container_mt-1] [INFO] [1764739489.878936406] [robot1.scan_matching_odometry_component]: enable_tf_broadcast          false
+[component_container_mt-1] [INFO] [1764739489.878939623] [robot1.scan_matching_odometry_component]: enable_transform_thresholding false
+[component_container_mt-1] [INFO] [1764739489.878945581] [robot1.scan_matching_odometry_component]: keyframe_delta_angle         0.010000
+[component_container_mt-1] [INFO] [1764739489.878949396] [robot1.scan_matching_odometry_component]: keyframe_delta_time          3.000000
+[component_container_mt-1] [INFO] [1764739489.878952714] [robot1.scan_matching_odometry_component]: keyframe_delta_translation   1.000000
+[component_container_mt-1] [INFO] [1764739489.878955971] [robot1.scan_matching_odometry_component]: map_frame_id                 robot1/map
+[component_container_mt-1] [INFO] [1764739489.878959252] [robot1.scan_matching_odometry_component]: max_acceptable_angle         1.000000
+[INFO] [launch_ros.actions.load_composable_nodes]: Loaded node '/robot1/scan_matching_odometry_component' in container '/robot1/mrg_slam_full_container'
+[component_container_mt-1] [INFO] [1764739489.878962489] [robot1.scan_matching_odometry_component]: max_acceptable_translation   1.000000
+[component_container_mt-1] [INFO] [1764739489.878965677] [robot1.scan_matching_odometry_component]: max_consecutive_rejections   5
+[component_container_mt-1] [INFO] [1764739489.878969509] [robot1.scan_matching_odometry_component]: odom_frame_id                robot1/odom
+[component_container_mt-1] [INFO] [1764739489.878974798] [robot1.scan_matching_odometry_component]: pose_cov_base_pos            0.020000
+[component_container_mt-1] [INFO] [1764739489.878978193] [robot1.scan_matching_odometry_component]: pose_cov_base_rot            0.040000
+[component_container_mt-1] [INFO] [1764739489.878981495] [robot1.scan_matching_odometry_component]: pose_cov_fitness_ref         0.400000
+[component_container_mt-1] [INFO] [1764739489.878984774] [robot1.scan_matching_odometry_component]: pose_cov_fitness_scale       5.000000
+[component_container_mt-1] [INFO] [1764739489.878987931] [robot1.scan_matching_odometry_component]: pose_cov_frame_id            robot1/odom
+[component_container_mt-1] [INFO] [1764739489.878991112] [robot1.scan_matching_odometry_component]: publish_map_pose             false
+[component_container_mt-1] [INFO] [1764739489.878994217] [robot1.scan_matching_odometry_component]: publish_pose_with_covariance true
+[component_container_mt-1] [INFO] [1764739489.878997334] [robot1.scan_matching_odometry_component]: qos_overrides./clock.subscription.depth 1
+[component_container_mt-1] [INFO] [1764739489.879002349] [robot1.scan_matching_odometry_component]: qos_overrides./clock.subscription.durability volatile
+[component_container_mt-1] [INFO] [1764739489.879005524] [robot1.scan_matching_odometry_component]: qos_overrides./clock.subscription.history keep_last
+[component_container_mt-1] [INFO] [1764739489.879008653] [robot1.scan_matching_odometry_component]: qos_overrides./clock.subscription.reliability best_effort
+[component_container_mt-1] [INFO] [1764739489.879012348] [robot1.scan_matching_odometry_component]: qos_overrides./parameter_events.publisher.depth 1000
+[component_container_mt-1] [INFO] [1764739489.879015587] [robot1.scan_matching_odometry_component]: qos_overrides./parameter_events.publisher.durability volatile
+[component_container_mt-1] [INFO] [1764739489.879018796] [robot1.scan_matching_odometry_component]: qos_overrides./parameter_events.publisher.history keep_last
+[component_container_mt-1] [INFO] [1764739489.879021948] [robot1.scan_matching_odometry_component]: qos_overrides./parameter_events.publisher.reliability reliable
+[component_container_mt-1] [INFO] [1764739489.879026915] [robot1.scan_matching_odometry_component]: qos_overrides./tf.publisher.depth 100
+[component_container_mt-1] [INFO] [1764739489.879030502] [robot1.scan_matching_odometry_component]: qos_overrides./tf.publisher.durability volatile
+[component_container_mt-1] [INFO] [1764739489.879033775] [robot1.scan_matching_odometry_component]: qos_overrides./tf.publisher.history keep_last
+[component_container_mt-1] [INFO] [1764739489.879036952] [robot1.scan_matching_odometry_component]: qos_overrides./tf.publisher.reliability reliable
+[component_container_mt-1] [INFO] [1764739489.879040142] [robot1.scan_matching_odometry_component]: reg_correspondence_randomness 20
+[component_container_mt-1] [INFO] [1764739489.879059645] [robot1.scan_matching_odometry_component]: reg_max_correspondence_distance 2.000000
+[component_container_mt-1] [INFO] [1764739489.879067428] [robot1.scan_matching_odometry_component]: reg_max_optimizer_iterations 20
+[component_container_mt-1] [INFO] [1764739489.879078059] [robot1.scan_matching_odometry_component]: reg_maximum_iterations       60
+[component_container_mt-1] [INFO] [1764739489.879082290] [robot1.scan_matching_odometry_component]: reg_nn_search_method         DIRECT7
+[component_container_mt-1] [INFO] [1764739489.879086049] [robot1.scan_matching_odometry_component]: reg_num_threads              8
+[component_container_mt-1] [INFO] [1764739489.879089632] [robot1.scan_matching_odometry_component]: reg_resolution               0.500000
+[component_container_mt-1] [INFO] [1764739489.879093154] [robot1.scan_matching_odometry_component]: reg_transformation_epsilon   0.010000
+[component_container_mt-1] [INFO] [1764739489.879096475] [robot1.scan_matching_odometry_component]: reg_use_reciprocal_correspondences false
+[component_container_mt-1] [INFO] [1764739489.879099770] [robot1.scan_matching_odometry_component]: registration_method          FAST_GICP
+[component_container_mt-1] [INFO] [1764739489.879102913] [robot1.scan_matching_odometry_component]: robot_odom_frame_id          robot1/odom
+[component_container_mt-1] [INFO] [1764739489.879107804] [robot1.scan_matching_odometry_component]: use_sim_time                 true
+[component_container_mt-1] [INFO] [1764739489.882047536] [robot1.mrg_slam_full_container]: Load Library: /home/hycon_ubuntu/workspace/lastmile_cslam_test_repo/Multi-Robot-Graph-SLAM-client/install/mrg_slam/lib/libmrg_slam_component.so
+[component_container_mt-1] [INFO] [1764739489.912967629] [robot1.mrg_slam_full_container]: Found class: rclcpp_components::NodeFactoryTemplate<mrg_slam::MrgSlamComponent>
+[component_container_mt-1] [INFO] [1764739489.913050725] [robot1.mrg_slam_full_container]: Instantiate class: rclcpp_components::NodeFactoryTemplate<mrg_slam::MrgSlamComponent>
+[INFO] [launch_ros.actions.load_composable_nodes]: Loaded node '/robot1/mrg_slam_component' in container '/robot1/mrg_slam_full_container'
+[component_container_mt-1] [INFO] [1764739489.918902703] [robot1.mrg_slam_full_container]: Load Library: /home/hycon_ubuntu/workspace/lastmile_cslam_test_repo/Multi-Robot-Graph-SLAM-client/install/mrg_slam/lib/libkeyframe_uploader_component.so
+[component_container_mt-1] [INFO] [1764739489.919494981] [robot1.mrg_slam_full_container]: Found class: rclcpp_components::NodeFactoryTemplate<mrg_slam::KeyframeUploaderComponent>
+[component_container_mt-1] [INFO] [1764739489.919532040] [robot1.mrg_slam_full_container]: Instantiate class: rclcpp_components::NodeFactoryTemplate<mrg_slam::KeyframeUploaderComponent>
+[component_container_mt-1] [INFO] [1764739489.922501251] [robot1.keyframe_uploader]: Initializing keyframe_uploader component...
+[component_container_mt-1] [INFO] [1764739489.923083752] [robot1.keyframe_uploader]: Keyframe Uploader initialized: rate_limit=1.00 Hz, enable=false
+[INFO] [launch_ros.actions.load_composable_nodes]: Loaded node '/robot1/keyframe_uploader' in container '/robot1/mrg_slam_full_container'
+[component_container_mt-1] [INFO] [1764739490.017742172] [robot1.mrg_slam_component]: Initializing mrg_slam component...
+[component_container_mt-1] construct solver: lm_var_cholmod
+[component_container_mt-1] done
+[component_container_mt-1] # Using CHOLMOD poseDim -1 landMarkDim -1 blockordering 1
+[component_container_mt-1] [RegistrationPCL::setNumThreads] Invalid number of threads: 0
+[component_container_mt-1] registration: SMALL_GICP
+[component_container_mt-1] [INFO] [1764739490.039578027] [robot1.mrg_slam_component]: accum_distance_thresh_other_robot 7.500000
+[component_container_mt-1] [INFO] [1764739490.039629146] [robot1.mrg_slam_component]: accum_distance_thresh_same_robot 8.000000
+[component_container_mt-1] [INFO] [1764739490.039635653] [robot1.mrg_slam_component]: candidate_max_xy_distance    8.000000
+[component_container_mt-1] [INFO] [1764739490.039640784] [robot1.mrg_slam_component]: const_stddev_q               0.100000
+[component_container_mt-1] [INFO] [1764739490.039644956] [robot1.mrg_slam_component]: const_stddev_x               0.500000
+[component_container_mt-1] [INFO] [1764739490.039653989] [robot1.mrg_slam_component]: custom_inf_matrix_first_node_stddev [4, 4, 4, 0.401426, 0.401426, 0.401426]
+[component_container_mt-1] [INFO] [1764739490.039658458] [robot1.mrg_slam_component]: enable_fill_first_cloud      false
+[component_container_mt-1] [INFO] [1764739490.039662195] [robot1.mrg_slam_component]: enable_floor_coeffs          false
+[component_container_mt-1] [INFO] [1764739490.039665673] [robot1.mrg_slam_component]: enable_gps                   false
+[component_container_mt-1] [INFO] [1764739490.039669077] [robot1.mrg_slam_component]: enable_imu_acceleration      false
+[component_container_mt-1] [INFO] [1764739490.039672850] [robot1.mrg_slam_component]: enable_imu_orientation       false
+[component_container_mt-1] [INFO] [1764739490.039676254] [robot1.mrg_slam_component]: enable_keyframe_event_publish true
+[component_container_mt-1] [INFO] [1764739490.039679588] [robot1.mrg_slam_component]: enable_loop_closure_consistency_check true
+[component_container_mt-1] [INFO] [1764739490.039683225] [robot1.mrg_slam_component]: fill_first_cloud_radius      5.000000
+[component_container_mt-1] [INFO] [1764739490.039686576] [robot1.mrg_slam_component]: fill_first_cloud_simple      false
+[component_container_mt-1] [INFO] [1764739490.039701458] [robot1.mrg_slam_component]: fitness_score_max_range      179769313486231570814527423731704356798070567525844996598917476803157260780028538760589558632766878171540458953514382464234321326889464182768467546703537516986049910576551282076245490090389328944075868508455133942304583236903222948165808559332123348274797826204144723168738177180919299881250404026184124858368.000000
+[component_container_mt-1] [INFO] [1764739490.039726748] [robot1.mrg_slam_component]: fitness_score_thresh         2.000000
+[component_container_mt-1] [INFO] [1764739490.039730738] [robot1.mrg_slam_component]: floor_edge_robust_kernel     NONE
+[component_container_mt-1] [INFO] [1764739490.039734413] [robot1.mrg_slam_component]: floor_edge_robust_kernel_size 1.000000
+[component_container_mt-1] [INFO] [1764739490.039738423] [robot1.mrg_slam_component]: floor_edge_stddev            10.000000
+[component_container_mt-1] [INFO] [1764739490.039742072] [robot1.mrg_slam_component]: g2o_solver_num_iterations    384
+[component_container_mt-1] [INFO] [1764739490.039745687] [robot1.mrg_slam_component]: g2o_solver_type              lm_var_cholmod
+[component_container_mt-1] [INFO] [1764739490.039749215] [robot1.mrg_slam_component]: g2o_verbose                  false
+[component_container_mt-1] [INFO] [1764739490.039752656] [robot1.mrg_slam_component]: gps_edge_robust_kernel       NONE
+[component_container_mt-1] [INFO] [1764739490.039756193] [robot1.mrg_slam_component]: gps_edge_robust_kernel_size  1.000000
+[component_container_mt-1] [INFO] [1764739490.039760023] [robot1.mrg_slam_component]: gps_edge_stddev_xy           10000.000000
+[component_container_mt-1] [INFO] [1764739490.039763663] [robot1.mrg_slam_component]: gps_edge_stddev_z            10.000000
+[component_container_mt-1] [INFO] [1764739490.039767257] [robot1.mrg_slam_component]: gps_enu_origin               []
+[component_container_mt-1] [INFO] [1764739490.039770912] [robot1.mrg_slam_component]: gps_enu_origin_from_msg      true
+[component_container_mt-1] [INFO] [1764739490.039774602] [robot1.mrg_slam_component]: gps_time_offset              0.000000
+[component_container_mt-1] [INFO] [1764739490.039777998] [robot1.mrg_slam_component]: gps_use_enu                  false
+[component_container_mt-1] [INFO] [1764739490.039781491] [robot1.mrg_slam_component]: graph_exchange_mode          PATH_PROXIMITY
+[component_container_mt-1] [INFO] [1764739490.039785391] [robot1.mrg_slam_component]: graph_request_max_robot_dist 10.000000
+[component_container_mt-1] [INFO] [1764739490.039788950] [robot1.mrg_slam_component]: graph_request_min_accum_dist 3.000000
+[component_container_mt-1] [INFO] [1764739490.039792556] [robot1.mrg_slam_component]: graph_request_min_time_delay 5.000000
+[component_container_mt-1] [INFO] [1764739490.039796164] [robot1.mrg_slam_component]: graph_update_interval        0.500000
+[component_container_mt-1] [INFO] [1764739490.039799623] [robot1.mrg_slam_component]: imu_acceleration_edge_robust_kernel NONE
+[component_container_mt-1] [INFO] [1764739490.039803179] [robot1.mrg_slam_component]: imu_acceleration_edge_robust_kernel_size 1.000000
+[component_container_mt-1] [INFO] [1764739490.039806701] [robot1.mrg_slam_component]: imu_acceleration_edge_stddev 3.000000
+[component_container_mt-1] [INFO] [1764739490.039810068] [robot1.mrg_slam_component]: imu_orientation_edge_robust_kernel NONE
+[component_container_mt-1] [INFO] [1764739490.039813576] [robot1.mrg_slam_component]: imu_orientation_edge_robust_kernel_size 1.000000
+[component_container_mt-1] [INFO] [1764739490.039820571] [robot1.mrg_slam_component]: imu_orientation_edge_stddev  0.100000
+[component_container_mt-1] [INFO] [1764739490.039824259] [robot1.mrg_slam_component]: imu_time_offset              0.000000
+[component_container_mt-1] [INFO] [1764739490.039827718] [robot1.mrg_slam_component]: init_odom_topic              NONE
+[component_container_mt-1] [INFO] [1764739490.039832635] [robot1.mrg_slam_component]: init_pose                    [0, 0, 0, 0, 0, 0]
+[component_container_mt-1] [INFO] [1764739490.039836010] [robot1.mrg_slam_component]: init_pose_topic              NONE
+[component_container_mt-1] [INFO] [1764739490.039839542] [robot1.mrg_slam_component]: keyframe_delta_angle         2.000000
+[component_container_mt-1] [INFO] [1764739490.039842998] [robot1.mrg_slam_component]: keyframe_delta_trans         2.000000
+[component_container_mt-1] [INFO] [1764739490.039846527] [robot1.mrg_slam_component]: keyframe_event_downsample_resolution 0.200000
+[component_container_mt-1] [INFO] [1764739490.039851811] [robot1.mrg_slam_component]: loop_closure_consistency_max_delta_angle 5.000000
+[component_container_mt-1] [INFO] [1764739490.039855483] [robot1.mrg_slam_component]: loop_closure_consistency_max_delta_trans 0.250000
+[component_container_mt-1] [INFO] [1764739490.039858893] [robot1.mrg_slam_component]: loop_closure_edge_robust_kernel Huber
+[component_container_mt-1] [INFO] [1764739490.039862323] [robot1.mrg_slam_component]: loop_closure_edge_robust_kernel_size 1.000000
+[component_container_mt-1] [INFO] [1764739490.039865990] [robot1.mrg_slam_component]: map_cloud_distance_far_thresh 20.000000
+[component_container_mt-1] [INFO] [1764739490.039869400] [robot1.mrg_slam_component]: map_cloud_min_points_per_voxel 1
+[component_container_mt-1] [INFO] [1764739490.039873106] [robot1.mrg_slam_component]: map_cloud_resolution         0.050000
+[component_container_mt-1] [INFO] [1764739490.039878835] [robot1.mrg_slam_component]: map_cloud_update_interval    10.000000
+[component_container_mt-1] [INFO] [1764739490.039884136] [robot1.mrg_slam_component]: map_frame_id                 robot1/map
+[component_container_mt-1] [INFO] [1764739490.039888347] [robot1.mrg_slam_component]: max_keyframes_per_update     10
+[component_container_mt-1] [INFO] [1764739490.039892088] [robot1.mrg_slam_component]: max_stddev_q                 0.200000
+[component_container_mt-1] [INFO] [1764739490.039895676] [robot1.mrg_slam_component]: max_stddev_x                 5.000000
+[component_container_mt-1] [INFO] [1764739490.039899228] [robot1.mrg_slam_component]: min_stddev_q                 0.050000
+[component_container_mt-1] [INFO] [1764739490.039902804] [robot1.mrg_slam_component]: min_stddev_x                 0.100000
+[component_container_mt-1] [INFO] [1764739490.039906650] [robot1.mrg_slam_component]: multi_robot_names            [robot1]
+[component_container_mt-1] [INFO] [1764739490.039912859] [robot1.mrg_slam_component]: odom_frame_id                robot1/odom
+[component_container_mt-1] [INFO] [1764739490.039916439] [robot1.mrg_slam_component]: odometry_edge_robust_kernel  NONE
+[component_container_mt-1] [INFO] [1764739490.039919933] [robot1.mrg_slam_component]: odometry_edge_robust_kernel_size 1.000000
+[component_container_mt-1] [INFO] [1764739490.039923402] [robot1.mrg_slam_component]: own_name                     robot1
+[component_container_mt-1] [INFO] [1764739490.039926809] [robot1.mrg_slam_component]: publish_odom2map_transform   false
+[component_container_mt-1] [INFO] [1764739490.039931930] [robot1.mrg_slam_component]: publish_slam_pose_with_covariance true
+[component_container_mt-1] [INFO] [1764739490.039935513] [robot1.mrg_slam_component]: qos_overrides./clock.subscription.depth 1
+[component_container_mt-1] [INFO] [1764739490.039939102] [robot1.mrg_slam_component]: qos_overrides./clock.subscription.durability volatile
+[component_container_mt-1] [INFO] [1764739490.039942738] [robot1.mrg_slam_component]: qos_overrides./clock.subscription.history keep_last
+[component_container_mt-1] [INFO] [1764739490.039946249] [robot1.mrg_slam_component]: qos_overrides./clock.subscription.reliability best_effort
+[component_container_mt-1] [INFO] [1764739490.039949673] [robot1.mrg_slam_component]: qos_overrides./parameter_events.publisher.depth 1000
+[component_container_mt-1] [INFO] [1764739490.039953071] [robot1.mrg_slam_component]: qos_overrides./parameter_events.publisher.durability volatile
+[component_container_mt-1] [INFO] [1764739490.039956638] [robot1.mrg_slam_component]: qos_overrides./parameter_events.publisher.history keep_last
+[component_container_mt-1] [INFO] [1764739490.039961776] [robot1.mrg_slam_component]: qos_overrides./parameter_events.publisher.reliability reliable
+[component_container_mt-1] [INFO] [1764739490.039965190] [robot1.mrg_slam_component]: reg_correspondence_randomness 20
+[component_container_mt-1] [INFO] [1764739490.039968679] [robot1.mrg_slam_component]: reg_max_correspondence_distance 2.000000
+[component_container_mt-1] [INFO] [1764739490.039972129] [robot1.mrg_slam_component]: reg_max_optimizer_iterations 20
+[component_container_mt-1] [INFO] [1764739490.039975598] [robot1.mrg_slam_component]: reg_maximum_iterations       64
+[component_container_mt-1] [INFO] [1764739490.039979082] [robot1.mrg_slam_component]: reg_nn_search_method         DIRECT7
+[component_container_mt-1] [INFO] [1764739490.039982499] [robot1.mrg_slam_component]: reg_num_threads              0
+[component_container_mt-1] [INFO] [1764739490.039987818] [robot1.mrg_slam_component]: reg_resolution               1.000000
+[component_container_mt-1] [INFO] [1764739490.039991445] [robot1.mrg_slam_component]: reg_transformation_epsilon   0.100000
+[component_container_mt-1] [INFO] [1764739490.039994832] [robot1.mrg_slam_component]: reg_use_reciprocal_correspondences false
+[component_container_mt-1] [INFO] [1764739490.039998196] [robot1.mrg_slam_component]: registration_method          SMALL_GICP
+[component_container_mt-1] [INFO] [1764739490.040001622] [robot1.mrg_slam_component]: result_dir                   
+[component_container_mt-1] [INFO] [1764739490.040005219] [robot1.mrg_slam_component]: robot_remove_points_radius   2.000000
+[component_container_mt-1] [INFO] [1764739490.040008541] [robot1.mrg_slam_component]: save_graph                   false
+[component_container_mt-1] [INFO] [1764739490.040012174] [robot1.mrg_slam_component]: slam_pose_cov_base_pos       0.020000
+[component_container_mt-1] [INFO] [1764739490.040017368] [robot1.mrg_slam_component]: slam_pose_cov_base_rot       0.040000
+[component_container_mt-1] [INFO] [1764739490.040020964] [robot1.mrg_slam_component]: slam_pose_cov_fitness_ref    0.400000
+[component_container_mt-1] [INFO] [1764739490.040024482] [robot1.mrg_slam_component]: slam_pose_cov_fitness_scale  5.000000
+[component_container_mt-1] [INFO] [1764739490.040027780] [robot1.mrg_slam_component]: use_const_inf_matrix         false
+[component_container_mt-1] [INFO] [1764739490.040031129] [robot1.mrg_slam_component]: use_custom_inf_matrix_first_node true
+[component_container_mt-1] [INFO] [1764739490.040036015] [robot1.mrg_slam_component]: use_planar_registration_guess true
+[component_container_mt-1] [INFO] [1764739490.040039511] [robot1.mrg_slam_component]: use_sim_time                 true
+[component_container_mt-1] [INFO] [1764739490.040043197] [robot1.mrg_slam_component]: var_gain_a                   20.000000
+[component_container_mt-1] [INFO] [1764739495.946863543] [robot1.mrg_slam_component]: Initializing pose from init_pose vector
+[component_container_mt-1] [INFO] [1764739495.946977019] [robot1.mrg_slam_component]: initial pose:
+[component_container_mt-1] 1 0 0 0
+[component_container_mt-1] 0 1 0 0
+[component_container_mt-1] 0 0 1 0
+[component_container_mt-1] 0 0 0 1
+[component_container_mt-1] [WARN] [1764739497.072389483] [robot1.scan_matching_odometry_component]: Using latest available odom->lidar TF for init guess (no stamped TF available)
+[component_container_mt-1] [INFO] [1764739497.397737093] [robot1.mrg_slam_component]: Initializing pose from init_pose vector
+[component_container_mt-1] [INFO] [1764739497.397857453] [robot1.mrg_slam_component]: initial pose:
+[component_container_mt-1] 1 0 0 0
+[component_container_mt-1] 0 1 0 0
+[component_container_mt-1] 0 0 1 0
+[component_container_mt-1] 0 0 0 1
+[component_container_mt-1] [INFO] [1764739497.921093733] [robot1.mrg_slam_component]: Initializing pose from init_pose vector
+[component_container_mt-1] [INFO] [1764739497.921163642] [robot1.mrg_slam_component]: initial pose:
+[component_container_mt-1] 1 0 0 0
+[component_container_mt-1] 0 1 0 0
+[component_container_mt-1] 0 0 1 0
+[component_container_mt-1] 0 0 0 1
+[component_container_mt-1] [INFO] [1764739498.421361382] [robot1.mrg_slam_component]: Initializing pose from init_pose vector
+[component_container_mt-1] [INFO] [1764739498.421446888] [robot1.mrg_slam_component]: initial pose:
+[component_container_mt-1] 1 0 0 0
+[component_container_mt-1] 0 1 0 0
+[component_container_mt-1] 0 0 1 0
+[component_container_mt-1] 0 0 0 1
+[component_container_mt-1] [INFO] [1764739498.956143073] [robot1.mrg_slam_component]: Initializing pose from init_pose vector
+[component_container_mt-1] [INFO] [1764739498.956306893] [robot1.mrg_slam_component]: initial pose:
+[component_container_mt-1] 1 0 0 0
+[component_container_mt-1] 0 1 0 0
+[component_container_mt-1] 0 0 1 0
+[component_container_mt-1] 0 0 0 1
+[component_container_mt-1] [INFO] [1764739499.470921324] [robot1.mrg_slam_component]: Initializing pose from init_pose vector
+[component_container_mt-1] [INFO] [1764739499.470988707] [robot1.mrg_slam_component]: initial pose:
+[component_container_mt-1] 1 0 0 0
+[component_container_mt-1] 0 1 0 0
+[component_container_mt-1] 0 0 1 0
+[component_container_mt-1] 0 0 0 1
+[component_container_mt-1] [INFO] [1764739499.997953056] [robot1.mrg_slam_component]: Initializing pose from init_pose vector
+[component_container_mt-1] [INFO] [1764739499.998033887] [robot1.mrg_slam_component]: initial pose:
+[component_container_mt-1] 1 0 0 0
+[component_container_mt-1] 0 1 0 0
+[component_container_mt-1] 0 0 1 0
+[component_container_mt-1] 0 0 0 1
+[component_container_mt-1] [INFO] [1764739500.499030807] [robot1.mrg_slam_component]: Initializing pose from init_pose vector
+[component_container_mt-1] [INFO] [1764739500.499156521] [robot1.mrg_slam_component]: initial pose:
+[component_container_mt-1] 1 0 0 0
+[component_container_mt-1] 0 1 0 0
+[component_container_mt-1] 0 0 1 0
+[component_container_mt-1] 0 0 0 1
+[component_container_mt-1] [INFO] [1764739501.000062672] [robot1.mrg_slam_component]: Initializing pose from init_pose vector
+[component_container_mt-1] [INFO] [1764739501.000276048] [robot1.mrg_slam_component]: initial pose:
+[component_container_mt-1] 1 0 0 0
+[component_container_mt-1] 0 1 0 0
+[component_container_mt-1] 0 0 1 0
+[component_container_mt-1] 0 0 0 1
+[component_container_mt-1] [INFO] [1764739501.521156979] [robot1.mrg_slam_component]: Initializing pose from init_pose vector
+[component_container_mt-1] [INFO] [1764739501.521231940] [robot1.mrg_slam_component]: initial pose:
+[component_container_mt-1] 1 0 0 0
+[component_container_mt-1] 0 1 0 0
+[component_container_mt-1] 0 0 1 0
+[component_container_mt-1] 0 0 0 1
+[component_container_mt-1] [INFO] [1764739502.048627894] [robot1.mrg_slam_component]: Initializing pose from init_pose vector
+[component_container_mt-1] [INFO] [1764739502.048740137] [robot1.mrg_slam_component]: initial pose:
+[component_container_mt-1] 1 0 0 0
+[component_container_mt-1] 0 1 0 0
+[component_container_mt-1] 0 0 1 0
+[component_container_mt-1] 0 0 0 1
+[component_container_mt-1] [INFO] [1764739502.548957616] [robot1.mrg_slam_component]: Initializing pose from init_pose vector
+[component_container_mt-1] [INFO] [1764739502.549028578] [robot1.mrg_slam_component]: initial pose:
+[component_container_mt-1] 1 0 0 0
+[component_container_mt-1] 0 1 0 0
+[component_container_mt-1] 0 0 1 0
+[component_container_mt-1] 0 0 0 1
+[component_container_mt-1] [INFO] [1764739503.084872298] [robot1.mrg_slam_component]: Initializing pose from init_pose vector
+[component_container_mt-1] [INFO] [1764739503.084978390] [robot1.mrg_slam_component]: initial pose:
+[component_container_mt-1] 1 0 0 0
+[component_container_mt-1] 0 1 0 0
+[component_container_mt-1] 0 0 1 0
+[component_container_mt-1] 0 0 0 1
+[component_container_mt-1] [INFO] [1764739503.571367102] [robot1.mrg_slam_component]: Initializing pose from init_pose vector
+[component_container_mt-1] [INFO] [1764739503.571529058] [robot1.mrg_slam_component]: initial pose:
+[component_container_mt-1] 1 0 0 0
+[component_container_mt-1] 0 1 0 0
+[component_container_mt-1] 0 0 1 0
+[component_container_mt-1] 0 0 0 1
+[component_container_mt-1] [INFO] [1764739504.099503208] [robot1.mrg_slam_component]: Initializing pose from init_pose vector
+[component_container_mt-1] [INFO] [1764739504.099652736] [robot1.mrg_slam_component]: initial pose:
+[component_container_mt-1] 1 0 0 0
+[component_container_mt-1] 0 1 0 0
+[component_container_mt-1] 0 0 1 0
+[component_container_mt-1] 0 0 0 1
+[component_container_mt-1] [INFO] [1764739504.621038616] [robot1.mrg_slam_component]: Initializing pose from init_pose vector
+[component_container_mt-1] [INFO] [1764739504.621182759] [robot1.mrg_slam_component]: initial pose:
+[component_container_mt-1] 1 0 0 0
+[component_container_mt-1] 0 1 0 0
+[component_container_mt-1] 0 0 1 0
+[component_container_mt-1] 0 0 0 1
+[component_container_mt-1] [INFO] [1764739505.121120067] [robot1.mrg_slam_component]: Initializing pose from init_pose vector
+[component_container_mt-1] [INFO] [1764739505.121231209] [robot1.mrg_slam_component]: initial pose:
+[component_container_mt-1] 1 0 0 0
+[component_container_mt-1] 0 1 0 0
+[component_container_mt-1] 0 0 1 0
+[component_container_mt-1] 0 0 0 1
+[component_container_mt-1] [INFO] [1764739505.649935264] [robot1.mrg_slam_component]: Initializing pose from init_pose vector
+[component_container_mt-1] [INFO] [1764739505.650092400] [robot1.mrg_slam_component]: initial pose:
+[component_container_mt-1] 1 0 0 0
+[component_container_mt-1] 0 1 0 0
+[component_container_mt-1] 0 0 1 0
+[component_container_mt-1] 0 0 0 1
+[component_container_mt-1] [INFO] [1764739506.171210394] [robot1.mrg_slam_component]: Initializing pose from init_pose vector
+[component_container_mt-1] [INFO] [1764739506.171300628] [robot1.mrg_slam_component]: initial pose:
+[component_container_mt-1] 1 0 0 0
+[component_container_mt-1] 0 1 0 0
+[component_container_mt-1] 0 0 1 0
+[component_container_mt-1] 0 0 0 1
+[component_container_mt-1] [INFO] [1764739506.699238923] [robot1.mrg_slam_component]: Initializing pose from init_pose vector
+[component_container_mt-1] [INFO] [1764739506.699369064] [robot1.mrg_slam_component]: initial pose:
+[component_container_mt-1] 1 0 0 0
+[component_container_mt-1] 0 1 0 0
+[component_container_mt-1] 0 0 1 0
+[component_container_mt-1] 0 0 0 1
+[component_container_mt-1] [INFO] [1764739507.221198644] [robot1.mrg_slam_component]: Initializing pose from init_pose vector
+[component_container_mt-1] [INFO] [1764739507.221308532] [robot1.mrg_slam_component]: initial pose:
+[component_container_mt-1] 1 0 0 0
+[component_container_mt-1] 0 1 0 0
+[component_container_mt-1] 0 0 1 0
+[component_container_mt-1] 0 0 0 1
+[component_container_mt-1] [INFO] [1764739507.720952439] [robot1.mrg_slam_component]: Initializing pose from init_pose vector
+[component_container_mt-1] [INFO] [1764739507.721052267] [robot1.mrg_slam_component]: initial pose:
+[component_container_mt-1] 1 0 0 0
+[component_container_mt-1] 0 1 0 0
+[component_container_mt-1] 0 0 1 0
+[component_container_mt-1] 0 0 0 1
+[component_container_mt-1] [INFO] [1764739508.221419879] [robot1.mrg_slam_component]: Initializing pose from init_pose vector
+[component_container_mt-1] [INFO] [1764739508.221530006] [robot1.mrg_slam_component]: initial pose:
+[component_container_mt-1] 1 0 0 0
+[component_container_mt-1] 0 1 0 0
+[component_container_mt-1] 0 0 1 0
+[component_container_mt-1] 0 0 0 1
+[component_container_mt-1] [INFO] [1764739508.748744438] [robot1.mrg_slam_component]: Initializing pose from init_pose vector
+[component_container_mt-1] [INFO] [1764739508.748884315] [robot1.mrg_slam_component]: initial pose:
+[component_container_mt-1] 1 0 0 0
+[component_container_mt-1] 0 1 0 0
+[component_container_mt-1] 0 0 1 0
+[component_container_mt-1] 0 0 0 1
+[component_container_mt-1] [INFO] [1764739509.271193969] [robot1.mrg_slam_component]: Initializing pose from init_pose vector
+[component_container_mt-1] [INFO] [1764739509.271271326] [robot1.mrg_slam_component]: initial pose:
+[component_container_mt-1] 1 0 0 0
+[component_container_mt-1] 0 1 0 0
+[component_container_mt-1] 0 0 1 0
+[component_container_mt-1] 0 0 0 1
+[component_container_mt-1] [INFO] [1764739509.798574234] [robot1.mrg_slam_component]: Initializing pose from init_pose vector
+[component_container_mt-1] [INFO] [1764739509.798736578] [robot1.mrg_slam_component]: initial pose:
+[component_container_mt-1] 1 0 0 0
+[component_container_mt-1] 0 1 0 0
+[component_container_mt-1] 0 0 1 0
+[component_container_mt-1] 0 0 0 1
+[component_container_mt-1] [INFO] [1764739510.055387616] [robot1.mrg_slam_component]: Published keyframe event: uuid=37ee3e34-744b-4568-8238-e64034602485, accum_dist=0, cloud_size=769
+[component_container_mt-1] [INFO] [1764739510.299608881] [robot1.mrg_slam_component]: Initializing pose from init_pose vector
+[component_container_mt-1] [INFO] [1764739510.299725138] [robot1.mrg_slam_component]: initial pose:
+[component_container_mt-1] 1 0 0 0
+[component_container_mt-1] 0 1 0 0
+[component_container_mt-1] 0 0 1 0
+[component_container_mt-1] 0 0 0 1
+[component_container_mt-1] [INFO] [1764739510.299927990] [flush_keyframe_queue]: fixing first node with information:
+[component_container_mt-1]  0.0625       0       0       0       0       0
+[component_container_mt-1]       0  0.0625       0       0       0       0
+[component_container_mt-1]       0       0  0.0625       0       0       0
+[component_container_mt-1]       0       0       0 6.20568       0       0
+[component_container_mt-1]       0       0       0       0 6.20568       0
+[component_container_mt-1]       0       0       0       0       0 6.20568
+[component_container_mt-1] 
+[component_container_mt-1] --- pose graph optimization ---
+[component_container_mt-1] nodes: 2   edges: 1
+[component_container_mt-1] optimizing... init
+[component_container_mt-1] optimize!! graph slam iteration #0
+[component_container_mt-1] done
+[component_container_mt-1] iterations: 1 / 384
+[component_container_mt-1] chi2: (before)0.000378765 -> (after)2.18166e-40
+[component_container_mt-1] time: 0.000[sec]
+[component_container_mt-1] [INFO] [1764739518.048507624] [MapCloudGenerator]: Generated map (skip first cloud: 0) with resolution 0.05, min points per voxel: 1, distance far thresh 20 and size 1248
+[component_container_mt-1] [INFO] [1764739518.109361350] [robot1.mrg_slam_component]: Published keyframe event: uuid=869ca260-26f9-492f-836a-5fcec1cf92f7, accum_dist=2.01949, cloud_size=610
+[component_container_mt-1] [INFO] [1764739518.472190749] [flush_keyframe_queue]: added odom:robot1.2->robot1.1 as next edge to keyframe robot1.1
+[component_container_mt-1] [INFO] [1764739518.472231247] [flush_keyframe_queue]: added odom:robot1.2->robot1.1 as prev edge to keyframe robot1.2
+[component_container_mt-1] 
+[component_container_mt-1] --- pose graph optimization ---
+[component_container_mt-1] nodes: 3   edges: 2
+[component_container_mt-1] optimizing... init
+[component_container_mt-1] optimize!! graph slam iteration #1
+[component_container_mt-1] done
+[component_container_mt-1] iterations: 13 / 384
+[component_container_mt-1] chi2: (before)2.18166e-40 -> (after)8.95876e-33
+[component_container_mt-1] time: 0.000[sec]
+[component_container_mt-1] [INFO] [1764739520.857618545] [robot1.mrg_slam_component]: Published keyframe event: uuid=7dd0ad81-fb5c-4bd2-95d9-b42687c713d2, accum_dist=4.05135, cloud_size=718
+[component_container_mt-1] [INFO] [1764739521.022327702] [flush_keyframe_queue]: added odom:robot1.3->robot1.2 as next edge to keyframe robot1.2
+[component_container_mt-1] [INFO] [1764739521.022389462] [flush_keyframe_queue]: added odom:robot1.3->robot1.2 as prev edge to keyframe robot1.3
+[component_container_mt-1] 
+[component_container_mt-1] --- pose graph optimization ---
+[component_container_mt-1] nodes: 4   edges: 3
+[component_container_mt-1] optimizing... init
+[component_container_mt-1] optimize!! graph slam iteration #2
+[component_container_mt-1] done
+[component_container_mt-1] iterations: 15 / 384
+[component_container_mt-1] chi2: (before)8.95876e-33 -> (after)2.31232e-32
+[component_container_mt-1] time: 0.000[sec]
+[component_container_mt-1] [INFO] [1764739524.805038332] [robot1.mrg_slam_component]: Published keyframe event: uuid=4ef77e90-cab5-473e-8588-2dfbe9cc1f5c, accum_dist=6.06186, cloud_size=787
+[component_container_mt-1] [INFO] [1764739525.149231896] [flush_keyframe_queue]: added odom:robot1.4->robot1.3 as next edge to keyframe robot1.3
+[component_container_mt-1] [INFO] [1764739525.149278031] [flush_keyframe_queue]: added odom:robot1.4->robot1.3 as prev edge to keyframe robot1.4
+[component_container_mt-1] 
+[component_container_mt-1] --- pose graph optimization ---
+[component_container_mt-1] nodes: 5   edges: 4
+[component_container_mt-1] optimizing... init
+[component_container_mt-1] optimize!! graph slam iteration #3
+[component_container_mt-1] done
+[component_container_mt-1] iterations: 13 / 384
+[component_container_mt-1] chi2: (before)2.31232e-32 -> (after)3.40198e-32
+[component_container_mt-1] time: 0.000[sec]
+[component_container_mt-1] [INFO] [1764739528.048888974] [MapCloudGenerator]: Generated map (skip first cloud: 0) with resolution 0.05, min points per voxel: 1, distance far thresh 20 and size 4817
+[component_container_mt-1] [INFO] [1764739528.861616924] [robot1.mrg_slam_component]: Published keyframe event: uuid=b621fb28-5941-4add-928e-383a89409de6, accum_dist=8.06411, cloud_size=913
+[component_container_mt-1] [INFO] [1764739529.249697877] [flush_keyframe_queue]: added odom:robot1.5->robot1.4 as next edge to keyframe robot1.4
+[component_container_mt-1] [INFO] [1764739529.249741362] [flush_keyframe_queue]: added odom:robot1.5->robot1.4 as prev edge to keyframe robot1.5
+[component_container_mt-1] 
+[component_container_mt-1] --- pose graph optimization ---
+[component_container_mt-1] nodes: 6   edges: 5
+[component_container_mt-1] optimizing... init
+[component_container_mt-1] optimize!! graph slam iteration #4
+[component_container_mt-1] done
+[component_container_mt-1] iterations: 24 / 384
+[component_container_mt-1] chi2: (before)3.40198e-32 -> (after)6.26038e-32
+[component_container_mt-1] time: 0.000[sec]
+[component_container_mt-1] [INFO] [1764739532.157720713] [robot1.mrg_slam_component]: Published keyframe event: uuid=d0046e07-4256-4a9b-aaa8-7ef1d705a97d, accum_dist=10.0698, cloud_size=1018
+[component_container_mt-1] [INFO] [1764739532.322328466] [flush_keyframe_queue]: added odom:robot1.6->robot1.5 as next edge to keyframe robot1.5
+[component_container_mt-1] [INFO] [1764739532.322393103] [flush_keyframe_queue]: added odom:robot1.6->robot1.5 as prev edge to keyframe robot1.6
+[component_container_mt-1] 
+[component_container_mt-1] --- loop detection/candidate matching ---
+[component_container_mt-1] new keyframe robot1.6 has 1 candidates, matching...
+[component_container_mt-1] robot1.2 
+[component_container_mt-1] .
+[component_container_mt-1] best matched candidate: robot1.2 score 0.134697
+[component_container_mt-1] Performing loop closure consistency check with best matched candidate robot1.2 score 0.134697
+[component_container_mt-1] Inconsistent with prev keyframe robot1.1 delta trans 5.44252 delta angle (deg)25.7644
+[component_container_mt-1] Inconsistent with next keyframe robot1.3 delta trans 4.27354 delta angle 84.6463
+[component_container_mt-1] elapsed time in loop closure: 51[msec]
+[component_container_mt-1] didnt pass either consistency check
+[component_container_mt-1] 
+[component_container_mt-1] --- pose graph optimization ---
+[component_container_mt-1] nodes: 7   edges: 6
+[component_container_mt-1] optimizing... init
+[component_container_mt-1] optimize!! graph slam iteration #5
+[component_container_mt-1] done
+[component_container_mt-1] iterations: 15 / 384
+[component_container_mt-1] chi2: (before)1.87009e+09 -> (after)5.19556e-32
+[component_container_mt-1] time: 0.000[sec]
+[component_container_mt-1] [INFO] [1764739538.048396159] [MapCloudGenerator]: Generated map (skip first cloud: 0) with resolution 0.05, min points per voxel: 1, distance far thresh 20 and size 7881
+[component_container_mt-1] [INFO] [1764739546.505112632] [robot1.mrg_slam_component]: Published keyframe event: uuid=b97fce94-ccf3-4c8e-9667-36cac8a02e20, accum_dist=12.093, cloud_size=734
+[component_container_mt-1] [INFO] [1764739546.722852126] [flush_keyframe_queue]: added odom:robot1.7->robot1.6 as next edge to keyframe robot1.6
+[component_container_mt-1] [INFO] [1764739546.722890882] [flush_keyframe_queue]: added odom:robot1.7->robot1.6 as prev edge to keyframe robot1.7
+[component_container_mt-1] 
+[component_container_mt-1] --- loop detection/candidate matching ---
+[component_container_mt-1] new keyframe robot1.7 has 2 candidates, matching...
+[component_container_mt-1] robot1.2 robot1.3 
+[component_container_mt-1] ..
+[component_container_mt-1] best matched candidate: robot1.2 score 0.134467
+[component_container_mt-1] Performing loop closure consistency check with best matched candidate robot1.2 score 0.134467
+[component_container_mt-1] Inconsistent with prev keyframe robot1.1 delta trans 3.9633 delta angle (deg)39.299
+[component_container_mt-1] Inconsistent with next keyframe robot1.3 delta trans 2.94326 delta angle 61.4576
+[component_container_mt-1] elapsed time in loop closure: 64[msec]
+[component_container_mt-1] didnt pass either consistency check
+[component_container_mt-1] 
+[component_container_mt-1] --- pose graph optimization ---
+[component_container_mt-1] nodes: 8   edges: 7
+[component_container_mt-1] optimizing... init
+[component_container_mt-1] optimize!! graph slam iteration #6
+[component_container_mt-1] done
+[component_container_mt-1] iterations: 24 / 384
+[component_container_mt-1] chi2: (before)5.19556e-32 -> (after)9.23471e-32
+[component_container_mt-1] time: 0.001[sec]
+[component_container_mt-1] [INFO] [1764739548.048320327] [MapCloudGenerator]: Generated map (skip first cloud: 0) with resolution 0.05, min points per voxel: 1, distance far thresh 20 and size 9076
+[component_container_mt-1] [INFO] [1764739550.305946405] [robot1.mrg_slam_component]: Published keyframe event: uuid=51e9034a-a7cf-415a-9ff7-4622b23c6449, accum_dist=14.1397, cloud_size=844
+[component_container_mt-1] [INFO] [1764739550.349040000] [flush_keyframe_queue]: added odom:robot1.8->robot1.7 as next edge to keyframe robot1.7
+[component_container_mt-1] [INFO] [1764739550.349085540] [flush_keyframe_queue]: added odom:robot1.8->robot1.7 as prev edge to keyframe robot1.8
+[component_container_mt-1] 
+[component_container_mt-1] --- loop detection/candidate matching ---
+[component_container_mt-1] new keyframe robot1.8 has 3 candidates, matching...
+[component_container_mt-1] robot1.2 robot1.3 robot1.4 
+[component_container_mt-1] ...
+[component_container_mt-1] best matched candidate: robot1.3 score 0.211369
+[component_container_mt-1] Performing loop closure consistency check with best matched candidate robot1.3 score 0.211369
+[component_container_mt-1] Inconsistent with prev keyframe robot1.2 delta trans 1.60937 delta angle (deg)7.08683
+[component_container_mt-1] Inconsistent with next keyframe robot1.4 delta trans 5.06186 delta angle 174.612
+[component_container_mt-1] elapsed time in loop closure: 114[msec]
+[component_container_mt-1] didnt pass either consistency check
+[component_container_mt-1] 
+[component_container_mt-1] --- pose graph optimization ---
+[component_container_mt-1] nodes: 9   edges: 8
+[component_container_mt-1] optimizing... init
+[component_container_mt-1] optimize!! graph slam iteration #7
+[component_container_mt-1] done
+[component_container_mt-1] iterations: 23 / 384
+[component_container_mt-1] chi2: (before)9.23471e-32 -> (after)9.47762e-32
+[component_container_mt-1] time: 0.000[sec]
+[component_container_mt-1] [INFO] [1764739554.355758874] [robot1.mrg_slam_component]: Published keyframe event: uuid=f50bda9d-5f74-46d0-8d24-447a584b1101, accum_dist=16.1486, cloud_size=734
+[component_container_mt-1] [INFO] [1764739554.572386998] [flush_keyframe_queue]: added odom:robot1.9->robot1.8 as next edge to keyframe robot1.8
+[component_container_mt-1] [INFO] [1764739554.572428593] [flush_keyframe_queue]: added odom:robot1.9->robot1.8 as prev edge to keyframe robot1.9
+[component_container_mt-1] 
+[component_container_mt-1] --- loop detection/candidate matching ---
+[component_container_mt-1] new keyframe robot1.9 has 4 candidates, matching...
+[component_container_mt-1] robot1.2 robot1.3 robot1.4 robot1.5 
+[component_container_mt-1] ....
+[component_container_mt-1] best matched candidate: robot1.3 score 0.280983
+[component_container_mt-1] Performing loop closure consistency check with best matched candidate robot1.3 score 0.280983
+[component_container_mt-1] Inconsistent with prev keyframe robot1.2 delta trans 3.66605 delta angle (deg)41.5812
+[component_container_mt-1] Inconsistent with next keyframe robot1.4 delta trans 5.36713 delta angle 134.448
+[component_container_mt-1] elapsed time in loop closure: 115[msec]
+[component_container_mt-1] didnt pass either consistency check
+[component_container_mt-1] 
+[component_container_mt-1] --- pose graph optimization ---
+[component_container_mt-1] nodes: 10   edges: 9
+[component_container_mt-1] optimizing... init
+[component_container_mt-1] optimize!! graph slam iteration #8
+[component_container_mt-1] done
+[component_container_mt-1] iterations: 23 / 384
+[component_container_mt-1] chi2: (before)9.47762e-32 -> (after)2.81682e-32
+[component_container_mt-1] time: 0.001[sec]
+[component_container_mt-1] [INFO] [1764739557.955870762] [robot1.mrg_slam_component]: Published keyframe event: uuid=67917560-91bd-4b94-9a33-632c9ca3817b, accum_dist=18.1843, cloud_size=668
+[component_container_mt-1] [INFO] [1764739558.048805005] [MapCloudGenerator]: Generated map (skip first cloud: 0) with resolution 0.05, min points per voxel: 1, distance far thresh 20 and size 11662
+[component_container_mt-1] [INFO] [1764739558.273358291] [flush_keyframe_queue]: added odom:robot1.10->robot1.9 as next edge to keyframe robot1.9
+[component_container_mt-1] [INFO] [1764739558.273529880] [flush_keyframe_queue]: added odom:robot1.10->robot1.9 as prev edge to keyframe robot1.10
+[component_container_mt-1] 
+[component_container_mt-1] --- loop detection/candidate matching ---
+[component_container_mt-1] new keyframe robot1.10 has 5 candidates, matching...
+[component_container_mt-1] robot1.2 robot1.3 robot1.4 robot1.5 robot1.6 
+[component_container_mt-1] .....
+[component_container_mt-1] best matched candidate: robot1.3 score 0.283702
+[component_container_mt-1] Performing loop closure consistency check with best matched candidate robot1.3 score 0.283702
+[component_container_mt-1] Inconsistent with prev keyframe robot1.2 delta trans 3.1594 delta angle (deg)31.9962
+[component_container_mt-1] Inconsistent with next keyframe robot1.4 delta trans 5.6351 delta angle 54.1716
+[component_container_mt-1] elapsed time in loop closure: 62[msec]
+[component_container_mt-1] didnt pass either consistency check
+[component_container_mt-1] 
+[component_container_mt-1] --- pose graph optimization ---
+[component_container_mt-1] nodes: 11   edges: 10
+[component_container_mt-1] optimizing... init
+[component_container_mt-1] optimize!! graph slam iteration #9
+[component_container_mt-1] done
+[component_container_mt-1] iterations: 35 / 384
+[component_container_mt-1] chi2: (before)1.02076e+10 -> (after)3.74785e-32
+[component_container_mt-1] time: 0.002[sec]
+[component_container_mt-1] [INFO] [1764739568.048407497] [MapCloudGenerator]: Generated map (skip first cloud: 0) with resolution 0.05, min points per voxel: 1, distance far thresh 20 and size 12773

@@ -122,6 +122,11 @@ public:
         sync_.reset( new message_filters::Synchronizer<ApproxSyncPolicy>( ApproxSyncPolicy( 32 ), odom_sub_, cloud_sub_ ) );
         sync_->registerCallback( std::bind( &MrgSlamComponent::cloud_callback, this, std::placeholders::_1, std::placeholders::_2 ) );
 
+        // Real-time odom subscriber for continuous pcl_pose_back estimation
+        realtime_odom_sub_ = create_subscription<nav_msgs::msg::Odometry>(
+            "scan_matching_odometry/odom", rclcpp::QoS( 10 ),
+            std::bind( &MrgSlamComponent::realtime_odom_callback, this, std::placeholders::_1 ) );
+
         // broadcast subscriptions, note that the topic is absolute and not potentially prefixed with the robot name/namespace
         odom_broadcast_sub_ = create_subscription<mrg_slam_msgs::msg::PoseWithName>( "/mrg_slam/odom_broadcast", rclcpp::QoS( 100 ),
                                                                                      std::bind( &MrgSlamComponent::odom_broadcast_callback,
@@ -171,7 +176,7 @@ public:
         odom_broadcast_pub_      = create_publisher<mrg_slam_msgs::msg::PoseWithName>( "/mrg_slam/odom_broadcast", rclcpp::QoS( 16 ) );
         slam_pose_broadcast_pub_ = create_publisher<mrg_slam_msgs::msg::PoseWithName>( "/mrg_slam/slam_pose_broadcast", rclcpp::QoS( 16 ) );
         if( publish_slam_pose_with_covariance_ ) {
-            slam_pose_cov_pub_ = create_publisher<geometry_msgs::msg::PoseWithCovarianceStamped>( "mrg_slam/slam_pose_cov",
+            slam_pose_cov_pub_ = create_publisher<geometry_msgs::msg::PoseWithCovarianceStamped>( "pcl_pose_back",
                                                                                                   rclcpp::QoS( 16 ) );
             scan_matching_status_sub_
                 = create_subscription<mrg_slam_msgs::msg::ScanMatchingStatus>( "scan_matching_odometry/status", rclcpp::QoS( 10 ),
@@ -381,6 +386,9 @@ private:
         declare_parameter<double>( "slam_pose_cov_base_rot", 0.01 );       // ~0.1 rad std dev
         declare_parameter<double>( "slam_pose_cov_fitness_ref", 0.5 );     // reference fitness score
         declare_parameter<double>( "slam_pose_cov_fitness_scale", 5.0 );   // max additional scale
+        
+        // odom2map transform publishing (disable when external EKF handles map->odom TF)
+        declare_parameter<bool>( "publish_odom2map_transform", true );
     }
 
     /**
@@ -559,20 +567,48 @@ private:
             return;
         }
 
+        // Use real-time estimated pose instead of keyframe pose to avoid jumps
+        Eigen::Isometry3d realtime_pose;
+        rclcpp::Time      pose_stamp = now();
+        
+        // Copy values with separate locks to avoid deadlock
+        Eigen::Isometry3d odom_copy;
+        rclcpp::Time      odom_stamp_copy;
+        bool              odom_valid_copy;
+        {
+            std::lock_guard<std::mutex> odom_lock( latest_odom_mutex_ );
+            odom_valid_copy = latest_odom_valid_;
+            odom_copy       = latest_odom_;
+            odom_stamp_copy = latest_odom_stamp_;
+        }
+
+        if( !odom_valid_copy ) {
+            // Fallback to keyframe pose if no odom available yet
+            realtime_pose = kf->node->estimate();
+        } else {
+            Eigen::Isometry3d trans_copy;
+            {
+                std::lock_guard<std::mutex> trans_lock( trans_odom2map_mutex_ );
+                trans_copy = trans_odom2map_;
+            }
+            realtime_pose = trans_copy * odom_copy;
+            pose_stamp    = odom_stamp_copy;
+        }
+
         geometry_msgs::msg::PoseWithCovarianceStamped cov_msg;
-        cov_msg.header.stamp    = kf->stamp;
+        cov_msg.header.stamp    = pose_stamp;
         cov_msg.header.frame_id = map_frame_id_;
-        cov_msg.pose.pose       = isometry2pose( kf->node->estimate() );
+        cov_msg.pose.pose       = isometry2pose( realtime_pose );
         
         // Debug logging for abnormal pose values
         const auto& p = cov_msg.pose.pose.position;
 
         RCLCPP_DEBUG_STREAM(get_logger(), "[BACKEND_POSE_DEBUG] ==================");
         RCLCPP_DEBUG_STREAM(get_logger(), "[BACKEND_POSE_DEBUG] map->base (output): [" << p.x << ", " << p.y << ", " << p.z << "]");
-        RCLCPP_DEBUG_STREAM(get_logger(), "[BACKEND_POSE_DEBUG] Node estimate (map->base):\n" << kf->node->estimate().matrix());
+        RCLCPP_DEBUG_STREAM(get_logger(), "[BACKEND_POSE_DEBUG] Realtime pose (trans_odom2map * latest_odom):\n" << realtime_pose.matrix());
         
         Eigen::Vector3d odom_pos = kf->odom.translation();
-        RCLCPP_DEBUG_STREAM(get_logger(), "[BACKEND_POSE_DEBUG] odom->base: [" << odom_pos.x() << ", " << odom_pos.y() << ", " << odom_pos.z() << "]");
+        RCLCPP_DEBUG_STREAM(get_logger(), "[BACKEND_POSE_DEBUG] keyframe odom->base: [" << odom_pos.x() << ", " << odom_pos.y() << ", " << odom_pos.z() << "]");
         
         {
             std::lock_guard<std::mutex> lock( trans_odom2map_mutex_ );
@@ -835,6 +871,17 @@ private:
         init_pose_msg_ = msg;
     }
 
+    /**
+     * @brief Real-time odom callback for continuous pose estimation
+     */
+    void realtime_odom_callback( nav_msgs::msg::Odometry::ConstSharedPtr msg )
+    {
+        std::lock_guard<std::mutex> lock( latest_odom_mutex_ );
+        latest_odom_       = odom2isometry( msg );
+        latest_odom_stamp_ = rclcpp::Time( msg->header.stamp );
+        latest_odom_valid_ = true;
+    }
+
 
     /**
      * @brief update the map_cloud_msg_ with the latest map
@@ -1034,7 +1081,7 @@ private:
 
         graph_database_->save_keyframe_poses();
 
-        if( odom2map_pub_->get_subscription_count() ) {
+        if( get_parameter( "publish_odom2map_transform" ).as_bool() && odom2map_pub_->get_subscription_count() ) {
             geometry_msgs::msg::TransformStamped ts = matrix2transform( prev_robot_keyframe->stamp, trans.matrix().cast<float>(),
                                                                         map_frame_id_, odom_frame_id_ );
             odom2map_pub_->publish( ts );
@@ -1546,6 +1593,13 @@ private:
     rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr         init_odom_sub_;
     rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr init_pose_sub_;
     geometry_msgs::msg::PoseStamped::ConstSharedPtr                  init_pose_msg_;
+
+    // Real-time odom tracking for continuous pcl_pose_back
+    rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr realtime_odom_sub_;
+    std::mutex                                                latest_odom_mutex_;
+    Eigen::Isometry3d                                         latest_odom_ = Eigen::Isometry3d::Identity();
+    rclcpp::Time                                              latest_odom_stamp_;
+    bool                                                      latest_odom_valid_ = false;
 
     // for map cloud generation and graph publishing
     std::string                        base_frame_id_;
