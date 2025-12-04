@@ -7,6 +7,8 @@
 **/log/
 log/
 **/logs/
+**/temp/
+**/docker/
 
 # Recorded/bag data
 *.db3

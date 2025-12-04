@@ -20,7 +20,7 @@
         // 클라이언트(도메인 11)에서 올라오는 것을 받아서
         // 도메인 15로 뿌릴 토픽
         subscribers: [
-          "/robot1/slam/keyframe_upload"
+          "/slam_server/keyframe_upload"
         ],
 
         // 서버에서 도메인 15에서 발행하는 것을

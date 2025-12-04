@@ -394,8 +394,8 @@ target_link_libraries(slam_server_component
   ${G2O_CORE_LIBRARY}
   ${G2O_STUFF_LIBRARY}
   ${G2O_SOLVER_PCG}
-  ${G2O_SOLVER_CSPARSE}
-  ${G2O_SOLVER_CHOLMOD}
+  ${G2O_SOLVER_CSPARSE}   # be aware of that CSPARSE is released under LGPL
+  ${G2O_SOLVER_CHOLMOD}   # be aware of that cholmod is released under GPL
   ${G2O_TYPES_SLAM3D}
   ${G2O_TYPES_SLAM3D_ADDONS}
   small_gicp::small_gicp
@@ -408,12 +408,16 @@ ament_target_dependencies(slam_server_component
   tf2_ros
   tf2_geometry_msgs
   tf2_eigen
+  geodesy
+  GeographicLib
   message_filters
   builtin_interfaces
   std_msgs
+  nmea_msgs
   sensor_msgs
   geometry_msgs
   nav_msgs
+  geographic_msgs
   visualization_msgs
   mrg_slam_msgs
   fast_gicp

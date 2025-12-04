@@ -96,7 +96,7 @@ def launch_setup(context, *args, **kwargs):
             ('save_map', '/slam_server/save_map'),
             ('publish_map', '/slam_server/publish_map'),
         ],
-        extra_arguments=[{'use_intra_process_comms': True}],
+        # Note: intra_process_comms disabled due to transient_local QoS incompatibility
     )
     
     # Container for composable nodes

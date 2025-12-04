@@ -33,7 +33,7 @@ public:
 
         // Publisher: upload topic (zenoh bridge should relay THIS topic)
         // Different topic to avoid infinite loop
-        pub_ = create_publisher<mrg_slam_msgs::msg::KeyframeEvent>( "slam/keyframe_upload", qos );
+        pub_ = create_publisher<mrg_slam_msgs::msg::KeyframeEvent>( "slam_server/keyframe_upload", qos );
 
         last_upload_time_ = now();
         keyframe_count_   = 0;

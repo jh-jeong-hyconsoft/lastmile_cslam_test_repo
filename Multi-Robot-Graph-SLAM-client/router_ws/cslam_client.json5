@@ -15,9 +15,6 @@
       // ROS2 노드 이름 (rqt_graph 등에 보이는 이름)
       nodename: "zenoh_bridge_robot1",
 
-      // domain은 여기서 생략하고, 실행할 때 -d 11 또는 ROS_DOMAIN_ID=11로 줄 거라 그대로 두면 됨
-      // domain: 11,
-
       // WSL이라 localhost만 쓰는 게 아니라서 false
       ros_localhost_only: false,
 
@@ -26,7 +23,7 @@
       allow: {
         // 이 브리지가 ROS→Zenoh로 내보낼 토픽 (도메인 11에서 서버로 올라가는 것)
         publishers: [
-          "/robot1/slam/keyframe_upload"
+          "/slam_server/keyframe_upload"
         ],
 
         // 이 브리지가 Zenoh→ROS로 내려받을 토픽 (서버에서 내려오는 글로벌 맵)

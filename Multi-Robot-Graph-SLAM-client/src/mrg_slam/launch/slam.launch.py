@@ -104,8 +104,8 @@ def generate_nodes(context, *args, **kwargs):
             package="mrg_slam",
             plugin="mrg_slam::KeyframeUploaderComponent",
             name="keyframe_uploader",
-            namespace=robot_ns,
             parameters=[uploader_cfg, shared_params],
+            remappings=[("slam/keyframe_event", f"{robot_ns}/slam/keyframe_event")],
         )
     )
 
