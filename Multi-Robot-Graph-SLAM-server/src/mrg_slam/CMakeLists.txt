@@ -369,6 +369,68 @@ install(
   RUNTIME DESTINATION bin
 )
 
+######################################
+## SLAM Server Component (B-plan)   ##
+######################################
+add_library(slam_server_component SHARED
+  apps/slam_server_component.cpp
+  src/mrg_slam/graph_database.cpp
+  src/mrg_slam/graph_slam.cpp
+  src/mrg_slam/edge.cpp
+  src/mrg_slam/loop_detector.cpp
+  src/mrg_slam/keyframe.cpp
+  src/mrg_slam/keyframe_updater.cpp
+  src/mrg_slam/map_cloud_generator.cpp
+  src/mrg_slam/registrations.cpp
+  src/mrg_slam/information_matrix_calculator.cpp
+  src/mrg_slam/markers_publisher.cpp
+  src/g2o/robust_kernel_io.cpp
+  src/ros_utils.cpp
+  src/pcl/fill_ground_plane.cpp
+)
+target_link_libraries(slam_server_component
+  ${PCL_LIBRARIES}
+  ${G2O_TYPES_DATA}
+  ${G2O_CORE_LIBRARY}
+  ${G2O_STUFF_LIBRARY}
+  ${G2O_SOLVER_PCG}
+  ${G2O_SOLVER_CSPARSE}
+  ${G2O_SOLVER_CHOLMOD}
+  ${G2O_TYPES_SLAM3D}
+  ${G2O_TYPES_SLAM3D_ADDONS}
+  small_gicp::small_gicp
+)
+ament_target_dependencies(slam_server_component
+  rclcpp
+  rclcpp_components
+  pcl_ros
+  tf2
+  tf2_ros
+  tf2_geometry_msgs
+  tf2_eigen
+  message_filters
+  builtin_interfaces
+  std_msgs
+  sensor_msgs
+  geometry_msgs
+  nav_msgs
+  visualization_msgs
+  mrg_slam_msgs
+  fast_gicp
+  ndt_omp
+)
+rclcpp_components_register_node(slam_server_component
+  PLUGIN "mrg_slam::SlamServerComponent"
+  EXECUTABLE slam_server_node
+)
+install(
+  TARGETS slam_server_component
+  EXPORT slam_server_component
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
+  RUNTIME DESTINATION bin
+)
+
 # Install ROS2 launch files
 file(GLOB launch_files RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} launch/*.py)
 install(PROGRAMS
@@ -380,6 +442,7 @@ install(PROGRAMS
 install(FILES
   rviz/mrg_slam.rviz
   rviz/nebula.rviz
+  rviz/slam_server.rviz
   DESTINATION share/${PROJECT_NAME}/rviz
 )
 

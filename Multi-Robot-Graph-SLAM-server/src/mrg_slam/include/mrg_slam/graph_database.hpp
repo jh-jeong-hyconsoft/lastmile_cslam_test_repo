@@ -21,6 +21,7 @@
 #include <mrg_slam/loop_detector.hpp>
 #include <mrg_slam/ros_time_hash.hpp>
 #include <mrg_slam_msgs/msg/graph_ros.hpp>
+#include <mrg_slam_msgs/msg/keyframe_event.hpp>
 // mrg_slam pcl
 #include <pcl/fill_ground_plane.hpp>
 // pcl
@@ -44,11 +45,25 @@ public:
                             pcl::PointCloud<PointT>::ConstPtr cloud, sensor_msgs::msg::PointCloud2::ConstSharedPtr cloud_msg );
 
     /**
+     * @brief Add external keyframe from robot (server mode)
+     * @param keyframe_event KeyframeEvent message from robot
+     * @param world_pose Transformed pose in world frame
+     */
+    void add_external_keyframe( const mrg_slam_msgs::msg::KeyframeEvent::SharedPtr& keyframe_event,
+                                const Eigen::Isometry3d& world_pose );
+
+    /**
      * @brief Process keyframes in the keyframe queue and create edges between them
      * @param odom2map current odometry to map transform
      * @return true if at least one keyframe was processed
      */
     bool flush_keyframe_queue( const Eigen::Isometry3d& odom2map );
+
+    /**
+     * @brief Process external keyframes in the queue (server mode)
+     * @return true if at least one keyframe was processed
+     */
+    bool flush_external_keyframe_queue();
 
     /**
      * @brief Adds static keyframes to the queue
@@ -130,6 +145,22 @@ private:
 
     std::mutex                static_keyframe_queue_mutex_;  // keyframes from the static keyframe provider
     std::deque<KeyFrame::Ptr> static_keyframe_queue_;
+
+    // External keyframe queue (server mode) - stores keyframes with edge info
+    struct ExternalKeyframeData {
+        KeyFrame::Ptr keyframe;
+        Eigen::Isometry3d world_pose;
+        bool has_edge;
+        std::string prev_keyframe_uuid;
+        Eigen::Isometry3d relative_pose;
+        Eigen::Matrix<double, 6, 6> information_matrix;
+        bool first_keyframe;
+    };
+    std::mutex                          external_keyframe_queue_mutex_;
+    std::deque<ExternalKeyframeData>    external_keyframe_queue_;
+    
+    // Per-robot previous keyframe tracking (server mode)
+    std::unordered_map<std::string, KeyFrame::Ptr> prev_keyframes_by_robot_;
 
     std::deque<KeyFrame::Ptr> new_keyframes_;  // keyframes to be checked for loop closure
     KeyFrame::ConstPtr        prev_robot_keyframe_;

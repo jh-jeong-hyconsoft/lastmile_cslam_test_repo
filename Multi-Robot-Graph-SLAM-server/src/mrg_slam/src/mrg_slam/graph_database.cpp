@@ -46,6 +46,218 @@ GraphDatabase::add_odom_keyframe( const builtin_interfaces::msg::Time &stamp, co
     keyframe_queue_.push_back( kf );
 }
 
+void
+GraphDatabase::add_external_keyframe( const mrg_slam_msgs::msg::KeyframeEvent::SharedPtr& keyframe_event,
+                                      const Eigen::Isometry3d& world_pose )
+{
+    auto logger = rclcpp::get_logger( "add_external_keyframe" );
+
+    // Use UUID from client or generate new one
+    boost::uuids::uuid uuid;
+    std::string uuid_str = keyframe_event->keyframe_uuid;
+    if( uuid_str.empty() ) {
+        uuid = uuid_generator_();
+        uuid_str = boost::uuids::to_string( uuid );
+    } else {
+        uuid = uuid_from_string_generator_( uuid_str );
+    }
+
+    // Check if keyframe already exists
+    if( uuid_keyframe_map_.find( uuid ) != uuid_keyframe_map_.end() ) {
+        RCLCPP_DEBUG( logger, "Keyframe %s already exists, skipping", uuid_str.c_str() );
+        return;
+    }
+
+    // Convert point cloud
+    pcl::PointCloud<PointT>::Ptr cloud( new pcl::PointCloud<PointT>() );
+    pcl::fromROSMsg( keyframe_event->cloud, *cloud );
+    sensor_msgs::msg::PointCloud2::SharedPtr cloud_msg = std::make_shared<sensor_msgs::msg::PointCloud2>( keyframe_event->cloud );
+
+    // Create keyframe with robot's name (not server's own_name_)
+    KeyFrame::Ptr kf = std::make_shared<KeyFrame>( 
+        keyframe_event->robot_name, 
+        keyframe_event->header.stamp, 
+        world_pose,  // Use world pose instead of odom
+        odom_keyframe_counter_++, 
+        keyframe_event->accum_distance, 
+        uuid, 
+        uuid_str,
+        slam_uuid_, 
+        slam_uuid_str_, 
+        cloud, 
+        cloud_msg 
+    );
+    kf->first_keyframe = keyframe_event->first_keyframe;
+
+    // Parse edge information
+    ExternalKeyframeData data;
+    data.keyframe = kf;
+    data.world_pose = world_pose;
+    data.has_edge = keyframe_event->has_edge;
+    data.prev_keyframe_uuid = keyframe_event->prev_keyframe_uuid;
+    data.first_keyframe = keyframe_event->first_keyframe;
+
+    if( keyframe_event->has_edge ) {
+        tf2::fromMsg( keyframe_event->relative_pose, data.relative_pose );
+        // Convert information matrix from array to Eigen matrix (row-major)
+        for( int i = 0; i < 6; ++i ) {
+            for( int j = 0; j < 6; ++j ) {
+                data.information_matrix( i, j ) = keyframe_event->information_matrix[i * 6 + j];
+            }
+        }
+    }
+
+    std::lock_guard<std::mutex> lock( external_keyframe_queue_mutex_ );
+    external_keyframe_queue_.push_back( data );
+
+    RCLCPP_INFO( logger, "Added external keyframe: robot=%s, uuid=%s, has_edge=%s, first=%s",
+                keyframe_event->robot_name.c_str(), uuid_str.substr(0, 8).c_str(),
+                data.has_edge ? "true" : "false", data.first_keyframe ? "true" : "false" );
+}
+
+bool
+GraphDatabase::flush_external_keyframe_queue()
+{
+    std::lock_guard<std::mutex> lock( external_keyframe_queue_mutex_ );
+
+    if( external_keyframe_queue_.empty() ) {
+        return false;
+    }
+
+    auto logger = rclcpp::get_logger( "flush_external_keyframe_queue" );
+
+    std::string odometry_edge_robust_kernel = node_->get_parameter( "odometry_edge_robust_kernel" ).as_string();
+    double odometry_edge_robust_kernel_size = node_->get_parameter( "odometry_edge_robust_kernel_size" ).as_double();
+
+    int num_processed = 0;
+    int max_per_update = node_->get_parameter( "max_keyframes_per_update" ).as_int();
+
+    for( size_t i = 0; i < std::min<size_t>( external_keyframe_queue_.size(), max_per_update ); ++i ) {
+        auto& data = external_keyframe_queue_[i];
+        auto& keyframe = data.keyframe;
+        num_processed = i + 1;
+
+        // Add to new_keyframes for loop closure detection
+        new_keyframes_.push_back( keyframe );
+
+        // Add pose node to graph
+        keyframe->node = graph_slam_->add_se3_node( data.world_pose );
+        uuid_keyframe_map_[keyframe->uuid] = keyframe;
+        keyframe_hash_[keyframe->stamp] = keyframe;
+
+        // Handle first keyframe of each robot
+        if( data.first_keyframe ) {
+            RCLCPP_INFO( logger, "First keyframe for robot %s: %s", 
+                        keyframe->robot_name.c_str(), keyframe->uuid_str.c_str() );
+            
+            // Create anchor if this is the first keyframe ever
+            if( keyframes_.empty() && new_keyframes_.size() == 1 && anchor_node_ == nullptr ) {
+                // Initialize anchor node
+                anchor_node_ = graph_slam_->add_se3_node( Eigen::Isometry3d::Identity() );
+                anchor_node_->setFixed( true );
+
+                auto uuid_anchor_kf = uuid_generator_();
+                std::string uuid_anchor_kf_str = boost::uuids::to_string( uuid_anchor_kf );
+
+                anchor_kf_ = std::make_shared<KeyFrame>( "server", rclcpp::Time(), Eigen::Isometry3d::Identity(), 
+                                                        0, -1, uuid_anchor_kf, uuid_anchor_kf_str, 
+                                                        slam_uuid_, slam_uuid_str_, nullptr );
+                anchor_kf_->node = anchor_node_;
+                uuid_keyframe_map_[anchor_kf_->uuid] = anchor_kf_;
+
+                // Create anchor edge to first keyframe
+                Eigen::MatrixXd information = Eigen::MatrixXd::Identity( 6, 6 ) * 1e4;
+                anchor_edge_g2o_ = graph_slam_->add_se3_edge( anchor_node_, keyframe->node, 
+                                                              keyframe->node->estimate(), information );
+
+                auto uuid_anchor_edge = uuid_generator_();
+                std::string uuid_anchor_edge_str = boost::uuids::to_string( uuid_anchor_edge );
+
+                anchor_edge_ptr_ = std::make_shared<Edge>( anchor_edge_g2o_, Edge::TYPE_ANCHOR, 
+                                                           uuid_anchor_edge, uuid_anchor_edge_str,
+                                                           anchor_kf_, keyframe );
+                edges_.emplace_back( anchor_edge_ptr_ );
+                edge_uuids_.insert( anchor_edge_ptr_->uuid );
+
+                RCLCPP_INFO( logger, "Created anchor node and edge for first keyframe" );
+            }
+
+            prev_keyframes_by_robot_[keyframe->robot_name] = keyframe;
+            prev_robot_keyframe_ = keyframe;
+            continue;
+        }
+
+        // Create edge to previous keyframe
+        KeyFrame::Ptr prev_kf = nullptr;
+        
+        // Try to find prev keyframe from edge info
+        if( data.has_edge && !data.prev_keyframe_uuid.empty() ) {
+            auto prev_uuid = uuid_from_string_generator_( data.prev_keyframe_uuid );
+            auto it = uuid_keyframe_map_.find( prev_uuid );
+            if( it != uuid_keyframe_map_.end() ) {
+                prev_kf = it->second;
+            }
+        }
+        
+        // Fallback: use per-robot previous keyframe
+        if( !prev_kf ) {
+            auto it = prev_keyframes_by_robot_.find( keyframe->robot_name );
+            if( it != prev_keyframes_by_robot_.end() ) {
+                prev_kf = it->second;
+            }
+        }
+
+        if( prev_kf ) {
+            Eigen::Isometry3d relative_pose;
+            Eigen::MatrixXd information;
+
+            if( data.has_edge ) {
+                // Use edge info from client
+                relative_pose = data.relative_pose;
+                information = data.information_matrix;
+            } else {
+                // Calculate edge from poses
+                relative_pose = keyframe->node->estimate().inverse() * prev_kf->node->estimate();
+                information = inf_calculator_->calc_information_matrix( keyframe->cloud, prev_kf->cloud, relative_pose );
+            }
+
+            auto g2o_edge = graph_slam_->add_se3_edge( keyframe->node, prev_kf->node, relative_pose, information );
+
+            auto edge_uuid = uuid_generator_();
+            std::string edge_uuid_str = boost::uuids::to_string( edge_uuid );
+
+            Edge::Ptr edge = std::make_shared<Edge>( g2o_edge, Edge::TYPE_ODOM, edge_uuid, edge_uuid_str, keyframe, prev_kf );
+            edges_.emplace_back( edge );
+            edge_uuids_.insert( edge->uuid );
+
+            // Set prev/next edge references
+            prev_kf->next_edge = edge;
+            keyframe->prev_edge = edge;
+
+            graph_slam_->add_robust_kernel( g2o_edge, odometry_edge_robust_kernel, odometry_edge_robust_kernel_size );
+
+            RCLCPP_DEBUG( logger, "Created odometry edge: %s -> %s", 
+                         keyframe->readable_id.c_str(), prev_kf->readable_id.c_str() );
+        } else {
+            RCLCPP_WARN( logger, "No previous keyframe found for robot %s, keyframe %s has no edge",
+                        keyframe->robot_name.c_str(), keyframe->uuid_str.c_str() );
+        }
+
+        // Update per-robot previous keyframe
+        prev_keyframes_by_robot_[keyframe->robot_name] = keyframe;
+        prev_robot_keyframe_ = keyframe;
+    }
+
+    // Remove processed keyframes
+    external_keyframe_queue_.erase( external_keyframe_queue_.begin(), 
+                                    external_keyframe_queue_.begin() + num_processed );
+
+    RCLCPP_INFO( logger, "Processed %d external keyframes, %zu remaining in queue",
+                num_processed, external_keyframe_queue_.size() );
+
+    return true;
+}
+
 bool
 GraphDatabase::flush_keyframe_queue( const Eigen::Isometry3d &odom2map )
 {

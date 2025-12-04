@@ -13,11 +13,18 @@ string keyframe_uuid
 # 누적 이동 거리 (키프레임 생성 기준)
 float64 accum_distance
 
-# 키프레임 포즈 (odom 프레임 기준)
+# 키프레임 포즈 (odom 프레임 기준, 또는 world 프레임)
 geometry_msgs/Pose estimate
 
 # 다운샘플된 포인트 클라우드 (업로드용, 0.5m 권장)
 sensor_msgs/PointCloud2 cloud
 
-# 선택: 이전 키프레임과의 엣지 정보
-# EdgeInfo edge_from_prev
+# 이전 키프레임과의 에지 정보 (하이브리드 방식)
+# 이전 키프레임이 없으면 (첫 키프레임) has_edge=false
+bool has_edge
+string prev_keyframe_uuid
+geometry_msgs/Pose relative_pose
+float64[36] information_matrix
+
+# 첫 번째 키프레임 여부
+bool first_keyframe

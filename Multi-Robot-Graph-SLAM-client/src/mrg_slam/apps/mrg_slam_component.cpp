@@ -657,11 +657,56 @@ private:
         kf_event.header.frame_id = odom_frame_id_;
         kf_event.robot_name      = own_name_;
         kf_event.accum_distance  = accum_d;
-        kf_event.estimate        = isometry2pose( odom );
         
-        // UUID는 서버에서 생성될 수 있으므로 여기서는 timestamp 기반 임시 ID
+        // Apply odom2map transform to get world pose
+        Eigen::Isometry3d world_pose;
+        {
+            std::lock_guard<std::mutex> lock( trans_odom2map_mutex_ );
+            world_pose = trans_odom2map_ * odom;
+        }
+        kf_event.estimate = isometry2pose( world_pose );
+        
+        // Generate UUID for this keyframe
         boost::uuids::uuid uuid = boost::uuids::random_generator()();
         kf_event.keyframe_uuid  = boost::uuids::to_string( uuid );
+        
+        // Check if this is the first keyframe
+        const auto& prev_keyframe = graph_database_->get_prev_robot_keyframe();
+        kf_event.first_keyframe = ( prev_keyframe == nullptr );
+        
+        // Edge information (if previous keyframe exists)
+        if( prev_keyframe != nullptr ) {
+            kf_event.has_edge = true;
+            kf_event.prev_keyframe_uuid = prev_keyframe_uuid_for_event_;
+            
+            // Calculate relative pose
+            Eigen::Isometry3d relative_pose = odom.inverse() * prev_keyframe->odom;
+            kf_event.relative_pose = isometry2pose( relative_pose );
+            
+            // Calculate information matrix (simplified: use constant values)
+            // In practice, this should match the information matrix used in graph optimization
+            Eigen::Matrix<double, 6, 6> info_matrix = Eigen::Matrix<double, 6, 6>::Identity();
+            double trans_stddev = 0.5;  // meters
+            double rot_stddev = 0.1;    // radians
+            for( int i = 0; i < 3; ++i ) {
+                info_matrix( i, i ) = 1.0 / ( trans_stddev * trans_stddev );
+            }
+            for( int i = 3; i < 6; ++i ) {
+                info_matrix( i, i ) = 1.0 / ( rot_stddev * rot_stddev );
+            }
+            
+            // Copy to message (row-major)
+            for( int i = 0; i < 6; ++i ) {
+                for( int j = 0; j < 6; ++j ) {
+                    kf_event.information_matrix[i * 6 + j] = info_matrix( i, j );
+                }
+            }
+        } else {
+            kf_event.has_edge = false;
+        }
+        
+        // Store current UUID for next keyframe's edge
+        prev_keyframe_uuid_for_event_ = kf_event.keyframe_uuid;
         
         // Additional downsampling for upload (reduce bandwidth)
         double ds_resolution = get_parameter( "keyframe_event_downsample_resolution" ).as_double();
@@ -678,7 +723,11 @@ private:
         
         keyframe_event_pub_->publish( kf_event );
         
-        RCLCPP_INFO_STREAM( get_logger(), "Published keyframe event: uuid=" << kf_event.keyframe_uuid << ", accum_dist=" << accum_d << ", cloud_size=" << ds_cloud->size() );
+        RCLCPP_INFO( get_logger(), "Published keyframe event: uuid=%s, first=%s, has_edge=%s, cloud=%zu",
+                    kf_event.keyframe_uuid.substr(0, 8).c_str(),
+                    kf_event.first_keyframe ? "true" : "false",
+                    kf_event.has_edge ? "true" : "false",
+                    ds_cloud->size() );
     }
 
     void slam_pose_broadcast_callback( mrg_slam_msgs::msg::PoseWithName::ConstSharedPtr slam_pose_msg )
@@ -1556,6 +1605,7 @@ private:
     
     // B-plan: Keyframe event publisher (for server upload)
     rclcpp::Publisher<mrg_slam_msgs::msg::KeyframeEvent>::SharedPtr keyframe_event_pub_;
+    std::string prev_keyframe_uuid_for_event_;  // Track prev keyframe UUID for edge info
 
     std::mutex                                                         trans_odom2map_mutex_;
     Eigen::Isometry3d                                                  trans_odom2map_;

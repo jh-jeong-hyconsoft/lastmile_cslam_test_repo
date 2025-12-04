@@ -1,0 +1,69 @@
+# CSLAM Server Configuration (B-plan)
+# ROS2 Humble parameter format
+# Usage: ros2 launch mrg_slam slam_server.launch.py config:=slam_server.yaml
+
+# Node: slam_server
+slam_server:
+  ros__parameters:
+    # Server identity
+    own_name: "server"
+    robot_names: ["robot1", "robot2", "robot3"]
+    
+    # Frame
+    map_frame_id: "world"
+    
+    # Graph optimization
+    g2o_solver_type: "lm_var_cholmod"
+    g2o_solver_num_iterations: 1024
+    g2o_verbose: false
+    save_graph: true
+    graph_update_interval: 5.0
+    max_keyframes_per_update: 20
+    
+    # Odometry edge
+    odometry_edge_robust_kernel: "NONE"
+    odometry_edge_robust_kernel_size: 1.0
+    
+    # Map generation
+    map_cloud_resolution: 0.1
+    map_cloud_min_points_per_voxel: 2
+    map_cloud_distance_far_thresh: 10000.0
+    map_cloud_update_interval: 30.0
+    
+    # Loop closure (inter-robot)
+    candidate_max_xy_distance: 15.0
+    accum_distance_thresh_same_robot: 10.0
+    accum_distance_thresh_other_robot: 5.0
+    fitness_score_max_range: 999999.0
+    fitness_score_thresh: 0.4
+    use_planar_registration_guess: false
+    enable_loop_closure_consistency_check: true
+    loop_closure_consistency_max_delta_trans: 0.5
+    loop_closure_consistency_max_delta_angle: 10.0
+    loop_closure_edge_robust_kernel: "Huber"
+    loop_closure_edge_robust_kernel_size: 1.0
+    
+    # Registration (for loop closure)
+    registration_method: "FAST_GICP"
+    reg_num_threads: 0  # 0 = auto
+    reg_transformation_epsilon: 0.1
+    reg_maximum_iterations: 128
+    reg_max_correspondence_distance: 2.5
+    reg_max_optimizer_iterations: 20
+    reg_use_reciprocal_correspondences: false
+    reg_correspondence_randomness: 20
+    reg_resolution: 1.0
+    reg_nn_search_method: "DIRECT7"
+    
+    # Information matrix calculation
+    use_const_inf_matrix: false
+    const_stddev_x: 0.5
+    const_stddev_q: 0.1
+    var_gain_a: 20.0
+    min_stddev_x: 0.1
+    max_stddev_x: 5.0
+    min_stddev_q: 0.05
+    max_stddev_q: 0.2
+    
+    # Output
+    result_dir: "/data/graphs"
